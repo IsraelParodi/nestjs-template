@@ -7,11 +7,12 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { SignUpDto } from './dto/sign-up.dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { Response } from 'express';
 import { Auth } from './decorators/auth.decorator';
 import { AuthType } from './enum/auth-type.enum';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Auth(AuthType.None)
 @Controller('authentication')
@@ -36,5 +37,11 @@ export class AuthenticationController {
     //   httpOnly: true,
     //   sameSite: true,
     // });
+  }
+
+  @HttpCode(HttpStatus.OK) // changed since the default is 201
+  @Post('refresh-tokens')
+  refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authenticationService.refreshTokens(refreshTokenDto);
   }
 }

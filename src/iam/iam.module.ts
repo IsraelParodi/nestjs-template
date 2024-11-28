@@ -11,10 +11,19 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthenticationGuard } from './authentication/guards/authentication/authentication.guard';
 import { AccessTokenGuard } from './authentication/guards/access-token/access-token.guard';
+import { Token } from './authentication/entities/token.entity';
+import { RefreshTokenIdsStorage } from './authentication/refresh-token-ids.storage';
+// import { RolesGuard } from './authorization/guards/roles.guard';
+// import { PermissionsGuard } from './authorization/guards/permissions.guard';
+import { Permission } from './authorization/entities/permission.entity';
+import { Role } from './authorization/entities/role.entity';
+import { PolicyHandlerStorage } from './authorization/policies/policy-handlers.storage';
+import { FrameworkContributorPolicyHandler } from './authorization/policies/framework-contributor.policy';
+import { PoliciesGuard } from './authorization/guards/policies.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Token, Role, Permission]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
   ],
@@ -27,8 +36,23 @@ import { AccessTokenGuard } from './authentication/guards/access-token/access-to
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: PermissionsGuard,
+    // },
+    {
+      provide: APP_GUARD,
+      useClass: PoliciesGuard,
+    },
     AccessTokenGuard,
     AuthenticationService,
+    RefreshTokenIdsStorage,
+    PolicyHandlerStorage,
+    FrameworkContributorPolicyHandler,
   ],
   controllers: [AuthenticationController],
 })
