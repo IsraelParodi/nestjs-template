@@ -7,19 +7,19 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { HashingService } from '../hashing/hashing.service';
-import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
-import { JwtService } from '@nestjs/jwt';
-import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
-import { ActiveUserData } from '../interfaces/active-user-data.interface';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { randomUUID } from 'crypto';
+import { JwtService } from '@nestjs/jwt';
+import { RefreshTokenDto } from 'src/iam/application/dto/refresh-token.dto';
+import { SignInDto } from 'src/iam/application/dto/sign-in.dto';
+import { SignUpDto } from 'src/iam/application/dto/sign-up.dto';
 import {
-  InvalidatedRefreshTokenError,
   RefreshTokenIdsStorage,
-} from './refresh-token-ids.storage';
+  InvalidatedRefreshTokenError,
+} from 'src/iam/infrastructure/refresh-token-ids.storage';
+import jwtConfig from 'src/iam/infrastructure/config/jwt.config';
+import { HashingService } from 'src/iam/infrastructure/hashing/hashing.service';
+import { ActiveUserData } from 'src/iam/infrastructure/interfaces/active-user-data.interface';
 
 @Injectable()
 export class AuthenticationService {

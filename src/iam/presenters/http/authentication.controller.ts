@@ -6,13 +6,13 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service';
-import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
 import { Response } from 'express';
-import { Auth } from './decorators/auth.decorator';
-import { AuthType } from './enum/auth-type.enum';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { AuthenticationService } from 'src/iam/application/services/authentication.service';
+import { Auth } from 'src/iam/infrastructure/decorators/auth.decorator';
+import { RefreshTokenDto } from 'src/iam/application/dto/refresh-token.dto';
+import { SignInDto } from 'src/iam/application/dto/sign-in.dto';
+import { SignUpDto } from 'src/iam/application/dto/sign-up.dto';
+import { AuthType } from 'src/iam/infrastructure/enum/auth-type.enum';
 
 @Auth(AuthType.None)
 @Controller('authentication')
@@ -30,9 +30,15 @@ export class AuthenticationController {
     @Res({ passthrough: true }) response: Response,
     @Body() signInDto: SignInDto,
   ) {
-    const accessToken = await this.authenticationService.signIn(signInDto);
-    return accessToken;
+    const { accessToken, refreshToken } =
+      await this.authenticationService.signIn(signInDto);
+    return { accessToken, refreshToken };
     // response.cookie('accessToken', accessToken, {
+    //   secure: true,
+    //   httpOnly: true,
+    //   sameSite: true,
+    // });
+    // response.cookie('refreshToken', refreshToken, {
     //   secure: true,
     //   httpOnly: true,
     //   sameSite: true,

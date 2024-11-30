@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-import { Token } from './entities/token.entity';
+import { Token } from '../domain/entities/token.entity';
 
 export class InvalidatedRefreshTokenError extends Error {}
 
