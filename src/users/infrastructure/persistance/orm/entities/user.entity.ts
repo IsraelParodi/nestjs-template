@@ -1,3 +1,4 @@
+import { RoleEntity } from 'src/iam/infrastructure/persistance/orm/entities/role.entity';
 import {
   Column,
   Entity,
@@ -5,7 +6,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoleEntity } from 'src/iam/domain/entities/role.entity';
 
 @Entity('users')
 export class UserEntity {

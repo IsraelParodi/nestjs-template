@@ -9,9 +9,9 @@ import {
 import { Response } from 'express';
 import { AuthenticationApplicationService } from 'src/iam/application/services/authentication.service';
 import { Auth } from 'src/iam/infrastructure/decorators/auth.decorator';
-import { RefreshTokenDto } from 'src/iam/presenters/http/dto/refresh-token.dto';
-import { SignInDto } from 'src/iam/presenters/http/dto/sign-in.dto';
-import { SignUpDto } from 'src/iam/presenters/http/dto/sign-up.dto';
+import { RefreshTokenDto } from 'src/iam/presenters/dto/iam/refresh-token.dto';
+import { SignInDto } from 'src/iam/presenters/dto/iam/sign-in.dto';
+import { SignUpDto } from 'src/iam/presenters/dto/iam/sign-up.dto';
 import { AuthType } from 'src/iam/infrastructure/enum/auth-type.enum';
 
 @Auth(AuthType.None)
@@ -35,19 +35,9 @@ export class AuthenticationController {
     const { accessToken, refreshToken } =
       await this.authenticationApplicationService.signIn(signInDto);
     return { accessToken, refreshToken };
-    // response.cookie('accessToken', accessToken, {
-    //   secure: true,
-    //   httpOnly: true,
-    //   sameSite: true,
-    // });
-    // response.cookie('refreshToken', refreshToken, {
-    //   secure: true,
-    //   httpOnly: true,
-    //   sameSite: true,
-    // });
   }
 
-  @HttpCode(HttpStatus.OK) // changed since the default is 201
+  @HttpCode(HttpStatus.OK)
   @Post('refresh-tokens')
   refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authenticationApplicationService.refreshTokens(refreshTokenDto);

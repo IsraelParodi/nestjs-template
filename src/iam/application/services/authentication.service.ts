@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { RefreshTokenDto } from 'src/iam/presenters/http/dto/refresh-token.dto';
-import { SignInDto } from 'src/iam/presenters/http/dto/sign-in.dto';
-import { SignUpDto } from 'src/iam/presenters/http/dto/sign-up.dto';
+import { RefreshTokenDto } from 'src/iam/presenters/dto/iam/refresh-token.dto';
+import { SignInDto } from 'src/iam/presenters/dto/iam/sign-in.dto';
+import { SignUpDto } from 'src/iam/presenters/dto/iam/sign-up.dto';
 import { AuthenticationDomainService } from 'src/iam/domain/services/authentication.service';
 
 @Injectable()

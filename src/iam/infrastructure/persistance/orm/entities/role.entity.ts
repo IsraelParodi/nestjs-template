@@ -7,7 +7,7 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
-import { Permission } from './permission.entity';
+import { PermissionEntity } from './permission.entity';
 
 @Entity('roles')
 export class RoleEntity {
@@ -17,7 +17,7 @@ export class RoleEntity {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => Permission, (permission) => permission.roles)
+  @ManyToMany(() => PermissionEntity, (permission) => permission.roles)
   @JoinTable({
     name: 'roles_permissions',
     joinColumn: {
@@ -29,7 +29,7 @@ export class RoleEntity {
       referencedColumnName: 'id',
     },
   })
-  permissions: Permission[];
+  permissions: PermissionEntity[];
 
   @OneToMany(() => UserEntity, (user) => user.role)
   users: UserEntity[];

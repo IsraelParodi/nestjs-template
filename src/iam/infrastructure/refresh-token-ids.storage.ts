@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
-import { Token } from '../domain/entities/token.entity';
+import { TokenRepository } from '../domain/repositories/token.repository';
 
 export class InvalidatedRefreshTokenError extends Error {}
 
 @Injectable()
 export class RefreshTokenIdsStorage {
-  constructor(
-    @InjectRepository(Token)
-    private readonly refreshTokenRepository: Repository<Token>,
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(private readonly refreshTokenRepository: TokenRepository) {}
 
   async insert(userId: number, tokenId: string): Promise<void> {
-    const refreshToken = this.refreshTokenRepository.create({
+    const refreshToken = await this.refreshTokenRepository.create({
       userId,
       tokenId,
     });
@@ -33,6 +27,6 @@ export class RefreshTokenIdsStorage {
   }
 
   async invalidate(userId: number): Promise<void> {
-    await this.refreshTokenRepository.delete({ userId });
+    await this.refreshTokenRepository.delete(userId);
   }
 }

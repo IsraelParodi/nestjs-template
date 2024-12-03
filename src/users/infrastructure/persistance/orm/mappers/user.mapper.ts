@@ -1,4 +1,4 @@
-import { RoleEntity } from 'src/iam/domain/entities/role.entity';
+import { RoleEntity } from 'src/iam/infrastructure/persistance/orm/entities/role.entity';
 import { Role } from 'src/users/domain/role';
 import { User } from 'src/users/domain/user';
 import { UserEntity } from 'src/users/infrastructure/persistance/orm/entities/user.entity';
@@ -9,7 +9,6 @@ export class UserMapper {
     const role = new Role();
     role.id = userEntity.role.id;
     role.name = userEntity.role.name;
-    // role.permissions = userEntity.role.permissions;
 
     user.email = userEntity.email;
     user.password = userEntity.password;

@@ -10,8 +10,8 @@ import {
 import { Auth } from 'src/iam/infrastructure/decorators/auth.decorator';
 import { Roles } from 'src/iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from 'src/iam/infrastructure/enum/auth-type.enum';
-import { CreateUserDto } from 'src/users/application/dto/create-user.dto';
-import { UpdateUserDto } from 'src/users/application/dto/update-user.dto';
+import { CreateUserDto } from 'src/users/presenters/dto/create-user.dto';
+import { UpdateUserDto } from 'src/users/presenters/dto/update-user.dto';
 import { UsersApplicationService } from 'src/users/application/services/users.service';
 
 import { RoleEnum } from 'src/users/infrastructure/enums/role.enum';

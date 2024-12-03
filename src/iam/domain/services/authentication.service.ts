@@ -7,9 +7,9 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshTokenDto } from 'src/iam/presenters/http/dto/refresh-token.dto';
-import { SignInDto } from 'src/iam/presenters/http/dto/sign-in.dto';
-import { SignUpDto } from 'src/iam/presenters/http/dto/sign-up.dto';
+import { RefreshTokenDto } from 'src/iam/presenters/dto/iam/refresh-token.dto';
+import { SignInDto } from 'src/iam/presenters/dto/iam/sign-in.dto';
+import { SignUpDto } from 'src/iam/presenters/dto/iam/sign-up.dto';
 import {
   RefreshTokenIdsStorage,
   InvalidatedRefreshTokenError,
@@ -20,11 +20,13 @@ import { ActiveUserData } from 'src/iam/infrastructure/interfaces/active-user-da
 import { UserRepository } from 'src/users/domain/repositories/user.repository';
 import { User } from 'src/users/domain/user';
 import { Role } from 'src/users/domain/role';
+import { RoleRepository } from '../repositories/role.repository';
 
 @Injectable()
 export class AuthenticationDomainService {
   constructor(
     private readonly usersRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
     private readonly hashingService: HashingService,
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
@@ -34,6 +36,7 @@ export class AuthenticationDomainService {
 
   async signUp(signUpDto: SignUpDto) {
     try {
+      await this.roleRepository.findOne({ where: { id: signUpDto.role } });
       const user = new User();
       const role = new Role(signUpDto.role);
       user.email = signUpDto.email;
