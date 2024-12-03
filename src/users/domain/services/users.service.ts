@@ -5,15 +5,19 @@ import { UserRepository } from '../repositories/user.repository';
 import { User } from '../user';
 import { Role } from '../role';
 import { HashingService } from 'src/iam/infrastructure/hashing/hashing.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto.ts';
+import { RoleRepository } from 'src/iam/domain/repositories/role.repository';
 
 @Injectable()
 export class UsersDomainService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
     private readonly hashingService: HashingService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    await this.roleRepository.findOne({ where: { id: createUserDto.role } });
     const user = new User();
     const role = new Role(createUserDto.role);
     user.email = createUserDto.email;
@@ -23,19 +27,22 @@ export class UsersDomainService {
     return this.userRepository.create(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll({ start, limit }: PaginationQueryDto) {
+    return this.userRepository.find({ start, limit });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${JSON.stringify(updateUserDto)} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    Object.assign(user, updateUserDto);
+    return this.userRepository.save(user);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.userRepository.delete(id);
   }
 }

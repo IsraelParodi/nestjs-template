@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Auth } from 'src/iam/infrastructure/decorators/auth.decorator';
 import { Roles } from 'src/iam/infrastructure/decorators/roles.decorator';
@@ -15,6 +16,7 @@ import { UpdateUserDto } from 'src/users/presenters/dto/update-user.dto';
 import { UsersApplicationService } from 'src/users/application/services/users.service';
 
 import { RoleEnum } from 'src/users/infrastructure/enums/role.enum';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto.ts';
 
 @Auth(AuthType.Bearer)
 @Controller('users')
@@ -30,8 +32,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersApplicationService.findAll();
+  findAll(@Query() { start = 0, limit = 10 }: PaginationQueryDto) {
+    return this.usersApplicationService.findAll({ start, limit });
   }
 
   @Get(':id')

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../../presenters/dto/create-user.dto';
 import { UpdateUserDto } from '../../presenters/dto/update-user.dto';
 import { UsersDomainService } from 'src/users/domain/services/users.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto.ts';
 
 @Injectable()
 export class UsersApplicationService {
@@ -11,12 +12,12 @@ export class UsersApplicationService {
     return await this.usersDomainService.create(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll(paginationQueryDto: PaginationQueryDto) {
+    return this.usersDomainService.findAll(paginationQueryDto);
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.usersDomainService.findOne(id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
@@ -24,6 +25,6 @@ export class UsersApplicationService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.usersDomainService.remove(id);
   }
 }
