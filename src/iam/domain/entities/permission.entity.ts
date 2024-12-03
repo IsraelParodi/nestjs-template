@@ -5,9 +5,9 @@ import {
   ManyToMany,
   JoinColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
+import { RoleEntity } from './role.entity';
 
-@Entity()
+@Entity('permissions')
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,7 +15,7 @@ export class Permission {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => Role, (role) => role.permissions)
+  @ManyToMany(() => RoleEntity, (role) => role.permissions)
   @JoinColumn({ name: 'role_id' })
-  roles: Role[];
+  roles: RoleEntity[];
 }

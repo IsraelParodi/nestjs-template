@@ -1,4 +1,4 @@
-import { Role } from '../../domain/entities/role.entity';
+import { Role } from 'src/users/domain/role';
 
 export interface ActiveUserData {
   sub: number;

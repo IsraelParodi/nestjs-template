@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { CoffeesModule } from './coffees/coffees.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IamModule } from './iam/application/iam.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
 import appConfig from 'app.config';
 import * as Joi from '@hapi/joi';
+import { IamModule } from './iam/iam.module';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import * as Joi from '@hapi/joi';
       }),
     }),
     UsersModule,
-    CoffeesModule,
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'postgres',

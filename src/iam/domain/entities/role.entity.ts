@@ -1,4 +1,4 @@
-import { User } from 'src/users/entities/user.entity';
+import { UserEntity } from 'src/users/infrastructure/persistance/orm/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { Permission } from './permission.entity';
 
-@Entity()
-export class Role {
+@Entity('roles')
+export class RoleEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,6 +31,6 @@ export class Role {
   })
   permissions: Permission[];
 
-  @OneToMany(() => User, (user) => user.role)
-  users: User[];
+  @OneToMany(() => UserEntity, (user) => user.role)
+  users: UserEntity[];
 }

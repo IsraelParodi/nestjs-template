@@ -2,14 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from 'src/iam/domain/entities/role.entity';
+import { RoleEntity } from 'src/iam/domain/entities/role.entity';
 
-@Entity()
-export class User {
+@Entity('users')
+export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,8 +18,7 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToOne(() => Role, { eager: true })
-  @JoinTable()
+  @ManyToOne(() => RoleEntity, { eager: true })
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role: RoleEntity;
 }
