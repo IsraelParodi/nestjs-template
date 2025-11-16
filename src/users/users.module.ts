@@ -12,9 +12,11 @@ import { RoleRepository } from '@iam/domain/repositories/role.repository';
 import { OrmRoleRepository } from '@iam/infrastructure/persistance/orm/repositories/orm-role.repository';
 import { RoleEntity } from '@iam/infrastructure/persistance/orm/entities/role.entity';
 import { RolesDomainService } from '@iam/domain/services/roles.service';
+import { NotificationsModule } from '@notifications/notifications.module';
+import { LocalitiesModule } from '@localities/localities.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, RoleEntity])],
+  imports: [TypeOrmModule.forFeature([RoleEntity, UserEntity]), NotificationsModule, LocalitiesModule],
   controllers: [UsersController],
   providers: [
     UsersApplicationService,
@@ -33,11 +35,6 @@ import { RolesDomainService } from '@iam/domain/services/roles.service';
       useClass: OrmRoleRepository,
     },
   ],
-  exports: [
-    UsersApplicationService,
-    UsersDomainService,
-    UserRepository,
-    RolesDomainService,
-  ],
+  exports: [UsersApplicationService, UsersDomainService, UserRepository, RolesDomainService],
 })
 export class UsersModule {}

@@ -1,12 +1,5 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinColumn,
-} from 'typeorm';
-import { RoleEntity } from './role.entity';
-import { AuditEntity } from '@iam/infrastructure/persistance/orm/entities/audit.entity';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
+import { AuditEntity } from '../../../../../common/entities/audit.entity';
 
 @Entity('permissions')
 export class PermissionEntity extends AuditEntity {
@@ -17,6 +10,7 @@ export class PermissionEntity extends AuditEntity {
   name: string;
 
   @ManyToMany(() => RoleEntity, (role) => role.permissions)
-  @JoinColumn({ name: 'role_id' })
   roles: RoleEntity[];
 }
+
+import { RoleEntity } from './role.entity';

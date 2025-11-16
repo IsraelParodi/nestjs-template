@@ -26,18 +26,18 @@ import { RolesDomainService } from './domain/services/roles.service';
 import { RoleRepository } from './domain/repositories/role.repository';
 import { OrmRoleRepository } from './infrastructure/persistance/orm/repositories/orm-role.repository';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { NotificationsModule } from '@notifications/notifications.module';
+import { ResetPasswordEntity } from './infrastructure/persistance/orm/entities/reset-password.entity';
+import { OrmResetPasswordRepository } from './infrastructure/persistance/orm/repositories/orm-reset-password.repository';
+import { ResetPasswordRepository } from './domain/repositories/reset-password.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserEntity,
-      TokenEntity,
-      PermissionEntity,
-      RoleEntity,
-    ]),
+    TypeOrmModule.forFeature([UserEntity, TokenEntity, RoleEntity, PermissionEntity, ResetPasswordEntity]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     UsersModule,
+    NotificationsModule,
   ],
   providers: [
     {
@@ -69,6 +69,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
     {
       provide: RoleRepository,
       useClass: OrmRoleRepository,
+    },
+    {
+      provide: ResetPasswordRepository,
+      useClass: OrmResetPasswordRepository,
     },
   ],
   controllers: [AuthenticationController, RolesController],

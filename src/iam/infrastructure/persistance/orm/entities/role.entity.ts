@@ -1,14 +1,5 @@
-import { UserEntity } from '@users/infrastructure/persistance/orm/entities/user.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
-} from 'typeorm';
-import { PermissionEntity } from './permission.entity';
-import { AuditEntity } from '@iam/infrastructure/persistance/orm/entities/audit.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { AuditEntity } from '@common/entities/audit.entity';
 
 @Entity('roles')
 export class RoleEntity extends AuditEntity {
@@ -18,7 +9,12 @@ export class RoleEntity extends AuditEntity {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => PermissionEntity, (permission) => permission.roles)
+  @Column()
+  description: string;
+
+  @ManyToMany(() => PermissionEntity, (permission) => permission.roles, {
+    lazy: true,
+  })
   @JoinTable({
     name: 'roles_permissions',
     joinColumn: {
@@ -35,3 +31,6 @@ export class RoleEntity extends AuditEntity {
   @OneToMany(() => UserEntity, (user) => user.role)
   users: UserEntity[];
 }
+
+import { PermissionEntity } from './permission.entity';
+import { UserEntity } from '@users/infrastructure/persistance/orm/entities/user.entity';

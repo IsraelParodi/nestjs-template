@@ -7,6 +7,15 @@ import appConfig from 'app.config';
 import * as Joi from '@hapi/joi';
 import { IamModule } from './iam/iam.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ComplainsModule } from '@complains/complains.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ListOfValuesModule } from '@lov/lov.module';
+import { LocalitiesModule } from './localities/localities.module';
+import { QuotationsModule } from '@quotations/quotations.module';
+import { FeesModule } from '@fees/fees.module';
+import { SeaPortsModule } from '@sea-ports/sea-ports.module';
+import { TrackingsModule } from '@trackings/tracking.module';
+import { ContactUsModule } from '@contact-us/contact-us.module';
 
 @Module({
   imports: [
@@ -21,7 +30,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 10,
+        limit: 1000,
       },
     ]),
     UsersModule,
@@ -36,11 +45,25 @@ import { ThrottlerModule } from '@nestjs/throttler';
         autoLoadEntities: true,
         synchronize: false,
         logging: true,
-        ssl: true,
+        ssl:
+          process.env.NODE_ENV !== 'LOCAL'
+            ? {
+                ca: process.env.CA_CERT,
+              }
+            : false,
       }),
     }),
     IamModule,
     CommonModule,
+    NotificationsModule,
+    ListOfValuesModule,
+    LocalitiesModule,
+    ComplainsModule,
+    QuotationsModule,
+    FeesModule,
+    SeaPortsModule,
+    TrackingsModule,
+    ContactUsModule,
   ],
   controllers: [],
   providers: [],

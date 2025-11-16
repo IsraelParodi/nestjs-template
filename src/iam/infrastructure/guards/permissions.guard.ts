@@ -9,25 +9,19 @@ import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 export class PermissionsGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const contextPermissions = this.reflector.getAllAndOverride<any[]>(
-      PERMISSIONS_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const contextPermissions = this.reflector.getAllAndOverride<any[]>(PERMISSIONS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (!contextPermissions) {
       return true;
     }
-    const user: ActiveUserData = context.switchToHttp().getRequest()[
-      REQUEST_USER_KEY
-    ];
+    const user: ActiveUserData = context.switchToHttp().getRequest()[REQUEST_USER_KEY];
 
     return contextPermissions.every((permission) =>
-      user.role.permissions?.some(
-        (rolePermission) => rolePermission.name === permission,
-      ),
+      user.role.permissions?.some((rolePermission) => rolePermission.name === permission),
     );
   }
 }

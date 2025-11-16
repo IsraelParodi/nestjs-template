@@ -6,6 +6,7 @@ export class RoleMapper {
     const role = new Role(roleEntity.id);
 
     role.name = roleEntity.name;
+    role.description = roleEntity.description;
     role.permissions = roleEntity.permissions;
 
     return role;
@@ -16,6 +17,7 @@ export class RoleMapper {
 
     entity.id = role.id;
     entity.name = role.name;
+    entity.description = role.description;
     // entity.permissions = role.permissions;
 
     return entity;

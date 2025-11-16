@@ -1,3 +1,24 @@
-import { CreateUserDto } from '@users/presenters/dto/create-user.dto';
+import { IsEmail, IsNumber, IsString, MinLength } from 'class-validator';
 
-export class SignUpDto extends CreateUserDto {}
+export class SignUpDto {
+  @IsEmail()
+  email: string;
+
+  @MinLength(10)
+  password: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  lastname: string;
+
+  @IsString()
+  businessTaxId: string;
+
+  @IsString()
+  legalName: string;
+
+  @IsNumber()
+  country?: number;
+}

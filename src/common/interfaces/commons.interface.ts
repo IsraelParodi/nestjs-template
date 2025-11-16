@@ -7,14 +7,27 @@ export interface IFindOne<T> {
 }
 
 export interface IFind {
-  where?: object;
+  where?: any;
+  order?: any;
+  select?: FindOptionsSelect<object>;
   relations?: string[];
   start?: number;
   limit?: number;
 }
 
+export interface PaginatedRequest<T> {
+  data: T[];
+  total: number;
+  start: number;
+  limit: number;
+}
+
 export interface PaginatedResult<T> {
   data: T[];
+  empty: boolean;
+  firstElement: boolean;
+  lastElement: boolean;
+  pageNumber: number;
   total: number;
   totalPages: number;
 }
