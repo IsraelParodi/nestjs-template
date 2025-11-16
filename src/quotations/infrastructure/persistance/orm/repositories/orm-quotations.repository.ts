@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, In, Repository } from 'typeorm';
+import { DeleteResult, EntityManager, In, Repository } from 'typeorm';
 import { QuotationsMapper } from '../mappers/quotations.mapper';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { QuotationsEntity } from '../entities/quotations.entity';
 import { Quotations } from '@quotations/domain/quotations';
 import { QuotationsRepository } from '@quotations/domain/repositories/quotations.repository';
@@ -18,9 +22,16 @@ export class OrmQuotationsRepository implements QuotationsRepository {
     private readonly pageableService: PageableService,
   ) {}
 
-  async save(quotations: Quotations): Promise<Quotations> {
+  async save(
+    quotations: Quotations,
+    manager?: EntityManager,
+  ): Promise<Quotations> {
     const persistenceModel = QuotationsMapper.toPersistence(quotations);
-    const newEntity = await this.quotationsRepository.save(persistenceModel);
+    const repository = manager
+      ? manager.getRepository(QuotationsEntity)
+      : this.quotationsRepository;
+
+    const newEntity = await repository.save(persistenceModel);
 
     return QuotationsMapper.toDomain(newEntity);
   }
@@ -37,7 +48,11 @@ export class OrmQuotationsRepository implements QuotationsRepository {
     return this.quotationsRepository.save(quotations);
   }
 
-  async findOne({ where, relations, select }: IFindOne<Quotations>): Promise<Quotations> {
+  async findOne({
+    where,
+    relations,
+    select,
+  }: IFindOne<Quotations>): Promise<Quotations> {
     const entity = await this.quotationsRepository.findOne({
       where,
       relations,
@@ -52,7 +67,12 @@ export class OrmQuotationsRepository implements QuotationsRepository {
     return QuotationsMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<Quotations>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<Quotations>> {
     const [quotations, total] = await this.quotationsRepository.findAndCount({
       where,
       relations,
@@ -61,7 +81,9 @@ export class OrmQuotationsRepository implements QuotationsRepository {
       order: { id: 'DESC' },
     });
 
-    const data = quotations.map((quotations) => QuotationsMapper.toDomain(quotations));
+    const data = quotations.map((quotations) =>
+      QuotationsMapper.toDomain(quotations),
+    );
 
     return this.pageableService.getPages({ data, total, start, limit });
   }
@@ -70,9 +92,15 @@ export class OrmQuotationsRepository implements QuotationsRepository {
     return this.quotationsRepository.softDelete({ id });
   }
 
-  async deleteMany(deleteManyDto: DeleteManyDto, deletedBy: Partial<UserEntity>): Promise<DeleteResult> {
+  async deleteMany(
+    deleteManyDto: DeleteManyDto,
+    deletedBy: Partial<UserEntity>,
+  ): Promise<DeleteResult> {
     const { ids } = deleteManyDto;
-    await this.quotationsRepository.update({ id: In(ids) }, { deletedBy: deletedBy });
+    await this.quotationsRepository.update(
+      { id: In(ids) },
+      { deletedBy: deletedBy },
+    );
     return this.quotationsRepository.softDelete({ id: In(ids) });
   }
 

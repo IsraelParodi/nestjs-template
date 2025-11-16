@@ -13,7 +13,8 @@ import { NotificationsApplicationService } from '@notifications/application/serv
 import { SeaPortsDomainService } from '@sea-ports/domain/services/sea-ports.service';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
 import { PaginationQueryQuotationsDto } from '@quotations/presenters/dto/pagination-query-quotations.dto';
-import { ILike } from 'typeorm';
+import { EntityManager, ILike } from 'typeorm';
+import { QuotationsEntity } from '@quotations/infrastructure/persistance/orm/entities/quotations.entity';
 
 @Injectable()
 export class QuotationsDomainService {
@@ -28,8 +29,14 @@ export class QuotationsDomainService {
     private readonly seaPortsDomainService: SeaPortsDomainService,
   ) {}
 
-  async create(createQuotationsDto: CreateQuotationsDto) {
-    const { executor, countryFound } = await this.quotationsValidations(createQuotationsDto, true);
+  async create(
+    createQuotationsDto: CreateQuotationsDto,
+    manager: EntityManager,
+  ) {
+    const { executor, countryFound } = await this.quotationsValidations(
+      createQuotationsDto,
+      true,
+    );
     this.logger.debug(`Creator found: ${JSON.stringify(executor)}`);
 
     const quotations = new Quotations();
@@ -39,7 +46,10 @@ export class QuotationsDomainService {
 
     console.log('before saving - quotations: ', quotations);
 
-    const quotationsSaved = await this.quotationsRepository.save(quotations);
+    const quotationsSaved = await this.quotationsRepository.save(
+      quotations,
+      manager,
+    );
 
     const {
       name,
@@ -57,45 +67,50 @@ export class QuotationsDomainService {
       destination,
     } = quotationsSaved;
 
-    await Promise.all([
-      this.notificationsApplicationService.send({
-        channel: NotificationChannelEnum.EMAIL,
-        recipient: quotations.email,
-        subject: 'Melvan - Solicitud de cotización',
-        templateId: NotificationEmailTemplateEnum.USER_QUOTATION,
-        message: {
-          body: {
-            transportType,
-            shippingType,
-            origin,
-            destination,
-          },
-        },
-      }),
-      this.notificationsApplicationService.send({
-        channel: NotificationChannelEnum.EMAIL,
-        recipient: process.env.NODE_ENV === 'PROD' ? 'melissapinday@melvanperu.com' : quotations.email,
-        subject: 'Melvan - Solicitud de cotización',
-        templateId: NotificationEmailTemplateEnum.MELVAN_QUOTATION,
-        message: {
-          body: {
-            name,
-            lastname,
-            userType,
-            country: country.name,
-            documentNumber,
-            phone,
-            email,
-            transportType,
-            shippingType,
-            cargoVolume,
-            industryType,
-            origin,
-            destination,
-          },
-        },
-      }),
-    ]);
+    // await Promise.all([
+    //   this.notificationsApplicationService.send({
+    //     channel: NotificationChannelEnum.EMAIL,
+    //     recipient: quotations.email,
+    //     subject: 'Melvan - Solicitud de cotización',
+    //     templateId: NotificationEmailTemplateEnum.USER_QUOTATION,
+    //     message: {
+    //       body: {
+    //         transportType,
+    //         shippingType,
+    //         origin,
+    //         destination,
+    //       },
+    //     },
+    //   }),
+    //   this.notificationsApplicationService.send({
+    //     channel: NotificationChannelEnum.EMAIL,
+    //     recipient:
+    //       process.env.NODE_ENV === 'PROD'
+    //         ? 'melissapinday@melvanperu.com'
+    //         : quotations.email,
+    //     subject: 'Melvan - Solicitud de cotización',
+    //     templateId: NotificationEmailTemplateEnum.MELVAN_QUOTATION,
+    //     message: {
+    //       body: {
+    //         name,
+    //         lastname,
+    //         userType,
+    //         country: country.name,
+    //         documentNumber,
+    //         phone,
+    //         email,
+    //         transportType,
+    //         shippingType,
+    //         cargoVolume,
+    //         industryType,
+    //         origin,
+    //         destination,
+    //       },
+    //     },
+    //   }),
+    // ]);
+
+    // throw new Error('oops');
 
     return quotationsSaved;
   }
@@ -119,7 +134,10 @@ export class QuotationsDomainService {
       relations: ['createdBy', 'updatedBy', 'country'],
     });
 
-    const { executor, countryFound } = await this.quotationsValidations(updateQuotationsDto, false);
+    const { executor, countryFound } = await this.quotationsValidations(
+      updateQuotationsDto,
+      false,
+    );
 
     this.logger.debug(`Updater found: ${JSON.stringify(executor)}`);
 
@@ -129,7 +147,10 @@ export class QuotationsDomainService {
       quotations.country = countryFound;
     }
 
-    if (updateQuotationsDto.transportType !== 'Transporte marítimo' && quotations.shippingType) {
+    if (
+      updateQuotationsDto.transportType !== 'Transporte marítimo' &&
+      quotations.shippingType
+    ) {
       quotations.shippingType = null;
     }
 
@@ -144,7 +165,10 @@ export class QuotationsDomainService {
     return this.quotationsRepository.deleteMany(deleteManyDto, deletedBy);
   }
 
-  async quotationsValidations(dto: CreateQuotationsDto | UpdateQuotationsDto, isCreate: boolean) {
+  async quotationsValidations(
+    dto: CreateQuotationsDto | UpdateQuotationsDto,
+    isCreate: boolean,
+  ) {
     const {
       createdBy,
       country,
@@ -174,17 +198,39 @@ export class QuotationsDomainService {
       originFound,
       destinationFound,
     ] = await Promise.all([
-      whereCondition && this.usersDomainService.findOne({ where: whereUserExecutor }),
+      whereCondition &&
+        this.usersDomainService.findOne({ where: whereUserExecutor }),
       country &&
         this.countriesDomainService.findOne({
           where: { id: country },
         }),
-      userType && this.listOfValuesDomainService.findChildByName('user_type', userType),
-      documentType && this.listOfValuesDomainService.findChildByName('document_type', documentType),
-      industryType && this.listOfValuesDomainService.findChildByName('industry_type', industryType),
-      transportType && this.listOfValuesDomainService.findChildByName('transport_type', transportType),
-      shippingType && this.listOfValuesDomainService.findChildByName('shipping_type', shippingType),
-      containerCode && this.listOfValuesDomainService.findChildByName('containers_size', containerCode),
+      userType &&
+        this.listOfValuesDomainService.findChildByName('user_type', userType),
+      documentType &&
+        this.listOfValuesDomainService.findChildByName(
+          'document_type',
+          documentType,
+        ),
+      industryType &&
+        this.listOfValuesDomainService.findChildByName(
+          'industry_type',
+          industryType,
+        ),
+      transportType &&
+        this.listOfValuesDomainService.findChildByName(
+          'transport_type',
+          transportType,
+        ),
+      shippingType &&
+        this.listOfValuesDomainService.findChildByName(
+          'shipping_type',
+          shippingType,
+        ),
+      containerCode &&
+        this.listOfValuesDomainService.findChildByName(
+          'containers_size',
+          containerCode,
+        ),
       origin &&
         this.seaPortsDomainService.findOne({
           where: {

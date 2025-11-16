@@ -6,13 +6,22 @@ import { Quotations } from '@quotations/domain/quotations';
 import { UpdateQuotationsDto } from '@quotations/presenters/dto/update-quotations.dto';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
 import { PaginationQueryQuotationsDto } from '@quotations/presenters/dto/pagination-query-quotations.dto';
+import { UnitOfWork } from '@common/services/unit-of-work.service';
 
 @Injectable()
 export class QuotationsApplicationService {
-  constructor(private readonly quotationsDomainService: QuotationsDomainService) {}
+  constructor(
+    private readonly quotationsDomainService: QuotationsDomainService,
+    private readonly unitOfWork: UnitOfWork,
+  ) {}
 
   async create(createQuotationsDto: CreateQuotationsDto) {
-    return await this.quotationsDomainService.create(createQuotationsDto);
+    return this.unitOfWork.execute(async (manager) => {
+      return await this.quotationsDomainService.create(
+        createQuotationsDto,
+        manager,
+      );
+    });
   }
 
   findAll(paginationQueryDto: PaginationQueryQuotationsDto) {
