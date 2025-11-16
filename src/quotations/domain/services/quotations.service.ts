@@ -10,7 +10,6 @@ import { ListOfValuesDomainService } from '@lov/domain/services/lov.service';
 import { NotificationChannelEnum } from '@notifications/infrastructure/enums/notification-channel.enum';
 import { NotificationEmailTemplateEnum } from '@notifications/infrastructure/enums/notification-email-templates.enum';
 import { NotificationsApplicationService } from '@notifications/application/services/notifications.service';
-import { SeaPortsDomainService } from '@sea-ports/domain/services/sea-ports.service';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
 import { PaginationQueryQuotationsDto } from '@quotations/presenters/dto/pagination-query-quotations.dto';
 import { EntityManager, ILike } from 'typeorm';
@@ -26,7 +25,6 @@ export class QuotationsDomainService {
     private readonly listOfValuesDomainService: ListOfValuesDomainService,
     private readonly countriesDomainService: CountriesDomainService,
     private readonly notificationsApplicationService: NotificationsApplicationService,
-    private readonly seaPortsDomainService: SeaPortsDomainService,
   ) {}
 
   async create(
@@ -231,20 +229,6 @@ export class QuotationsDomainService {
           'containers_size',
           containerCode,
         ),
-      origin &&
-        this.seaPortsDomainService.findOne({
-          where: {
-            iso2Country: origin.substring(0, 2),
-            location: origin.slice(-3),
-          },
-        }),
-      destination &&
-        this.seaPortsDomainService.findOne({
-          where: {
-            iso2Country: destination.substring(0, 2),
-            location: destination.slice(-3),
-          },
-        }),
     ]);
 
     if (!executor && !isCreate) {

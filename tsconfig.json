@@ -27,8 +27,6 @@
       "@lov/*": ["./src/lov/*"],
       "@localities/*": ["./src/localities/*"],
       "@quotations/*": ["./src/quotations/*"],
-      "@fees/*": ["./src/fees/*"],
-      "@sea-ports/*": ["./src/sea-ports/*"],
       "@trackings/*": ["./src/trackings/*"],
       "@contact-us/*": ["./src/contact-us/*"],
     }

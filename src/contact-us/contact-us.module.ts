@@ -10,7 +10,6 @@ import { LocalitiesModule } from '@localities/localities.module';
 import { ListOfValuesModule } from '@lov/lov.module';
 import { ContactUsRepository } from './domain/repositories/contact-us.repository';
 import { NotificationsModule } from '@notifications/notifications.module';
-import { SeaPortsModule } from '@sea-ports/sea-ports.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { SeaPortsModule } from '@sea-ports/sea-ports.module';
     LocalitiesModule,
     ListOfValuesModule,
     NotificationsModule,
-    SeaPortsModule,
   ],
   controllers: [ContactUsController],
   providers: [
@@ -30,6 +28,10 @@ import { SeaPortsModule } from '@sea-ports/sea-ports.module';
       useClass: OrmContactUsRepository,
     },
   ],
-  exports: [ContactUsApplicationService, ContactUsDomainService, ContactUsRepository],
+  exports: [
+    ContactUsApplicationService,
+    ContactUsDomainService,
+    ContactUsRepository,
+  ],
 })
 export class ContactUsModule {}

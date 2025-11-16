@@ -12,9 +12,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ListOfValuesModule } from '@lov/lov.module';
 import { LocalitiesModule } from './localities/localities.module';
 import { QuotationsModule } from '@quotations/quotations.module';
-import { FeesModule } from '@fees/fees.module';
-import { SeaPortsModule } from '@sea-ports/sea-ports.module';
-import { TrackingsModule } from '@trackings/tracking.module';
 import { ContactUsModule } from '@contact-us/contact-us.module';
 
 @Module({
@@ -60,9 +57,6 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
     LocalitiesModule,
     ComplainsModule,
     QuotationsModule,
-    FeesModule,
-    SeaPortsModule,
-    TrackingsModule,
     ContactUsModule,
   ],
   controllers: [],

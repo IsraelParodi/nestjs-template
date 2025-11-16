@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { StateEntity } from './states.entity';
-import { SeaPortEntity } from '@sea-ports/infrastructure/persistance/orm/entities/sea-port.entity';
 
 @Entity('countries')
 export class CountryEntity {
@@ -102,7 +108,4 @@ export class CountryEntity {
   // Relationships
   @OneToMany(() => StateEntity, (state) => state.countryId)
   states: StateEntity[];
-
-  @OneToMany(() => SeaPortEntity, (seaport) => seaport.country)
-  seaPorts: SeaPortEntity[];
 }
