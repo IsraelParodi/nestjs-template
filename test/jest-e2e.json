@@ -1,9 +1,25 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "../",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "testPathIgnorePatterns": ["/node_modules/", "/dist/"],
+  "modulePathIgnorePatterns": ["/dist/"],
+  "watchman": false,
+  "moduleNameMapper": {
+    "^@iam/(.*)$": "<rootDir>/src/iam/$1",
+    "^@common/(.*)$": "<rootDir>/src/common/$1",
+    "^@users/(.*)$": "<rootDir>/src/users/$1",
+    "^@complains/(.*)$": "<rootDir>/src/complains/$1",
+    "^@notifications/(.*)$": "<rootDir>/src/notifications/$1",
+    "^@lov/(.*)$": "<rootDir>/src/lov/$1",
+    "^@localities/(.*)$": "<rootDir>/src/localities/$1",
+    "^@quotations/(.*)$": "<rootDir>/src/quotations/$1",
+    "^@trackings/(.*)$": "<rootDir>/src/trackings/$1",
+    "^@contact-us/(.*)$": "<rootDir>/src/contact-us/$1"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/global-setup.ts"]
 }

@@ -1,10 +1,15 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { ActiveUserData } from '@iam/infrastructure/interfaces/active-user-data.interface';
 import { REQUEST_USER_KEY } from '@iam/infrastructure/iam.constants';
-import { RoleEnum } from '@users/infrastructure/enums/role.enum';
+import { RoleEnum } from '@common/infrastructure/enums/role.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -25,6 +30,12 @@ export class RolesGuard implements CanActivate {
       REQUEST_USER_KEY
     ];
 
-    return contextRoles.some((role) => user.role.name === role);
+    const allowed = contextRoles.includes(user.role?.name as RoleEnum);
+
+    if (!allowed) {
+      throw new ForbiddenException('No cuenta con permisos para acceder');
+    }
+
+    return allowed;
   }
 }

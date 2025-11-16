@@ -17,10 +17,22 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "strictPropertyInitialization": false,
     "paths": {
       "@iam/*": ["./src/iam/*"],
       "@common/*": ["./src/common/*"],
       "@users/*": ["./src/users/*"],
+      "@complains/*": ["./src/complains/*"],
+      "@notifications/*": ["./src/notifications/*"],
+      "@lov/*": ["./src/lov/*"],
+      "@localities/*": ["./src/localities/*"],
+      "@quotations/*": ["./src/quotations/*"],
+      "@trackings/*": ["./src/trackings/*"],
+      "@contact-us/*": ["./src/contact-us/*"],
     }
+  },
+   "watchOptions": {
+    "watchFile": "fixedPollingInterval",
+    "watchDirectory": "fixedPollingInterval"
   }
 }

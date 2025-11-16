@@ -1,4 +1,4 @@
-import { Role } from '@users/domain/role';
+import { Role } from '@users/domain/entities/role';
 
 export interface ActiveUserData {
   sub: number;

@@ -1,0 +1,32 @@
+import {
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+
+import type { UserEntity } from '@users/infrastructure/adapters/typeorm/entities/user.entity';
+
+export abstract class AuditEntity {
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  deletedAt: Date;
+
+  @ManyToOne('UserEntity', { nullable: true })
+  @JoinColumn({ name: 'created_by' })
+  createdBy: UserEntity;
+
+  @ManyToOne('UserEntity', { nullable: true })
+  @JoinColumn({ name: 'updated_by' })
+  updatedBy: UserEntity;
+
+  @ManyToOne('UserEntity', { nullable: true })
+  @JoinColumn({ name: 'deleted_by' })
+  deletedBy: UserEntity;
+}

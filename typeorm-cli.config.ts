@@ -1,7 +1,17 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
-dotenv.config();
+const appEnv = process.env.APP_ENV ?? 'DEV';
+const envMap: Record<string, string> = {
+  TEST: '.env.test',
+  PROD: '.env.production',
+};
+
+const dotenvPath = envMap[appEnv] ?? '.env.development'
+
+dotenv.config({
+  path: dotenvPath,
+});
 
 export default new DataSource({
   type: 'postgres',
@@ -12,5 +22,7 @@ export default new DataSource({
   database: process.env.DATABASE_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
-  ssl: true,
+  ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV || '')
+    ? { ca: process.env.CA_CERT }
+    : false,
 });

@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:18.1
+    ports:
+      - "5432:5432"
+    environment:
+        - POSTGRES_USER=db_owner
+        - POSTGRES_PASSWORD=123456
+        - POSTGRES_DB=db_stage
+    volumes:
+      - data:/var/lib/postgresql
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: db_owner
+      DATABASE_PASSWORD: 123456
+      DATABASE_NAME: db_stage
+    volumes:
+      - .:/app
+    ports:
+      - "3001:3000"
+    command: >
+      sh -c "npm run migration:run && npm run start:prod"
+
+volumes:
+  data:

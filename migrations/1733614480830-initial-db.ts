@@ -77,7 +77,8 @@ export class InitialDb1733614480830 implements MigrationInterface {
 
             ALTER TABLE "roles_permissions" ADD CONSTRAINT "FK_7d2dad9f14eddeb09c256fea719" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
             ALTER TABLE "roles_permissions" ADD CONSTRAINT "FK_337aa8dba227a1fe6b73998307b" FOREIGN KEY ("permission_id") REFERENCES "permissions"("id");
-            INSERT INTO ROLES (id, name) VALUES (1, 'admin')
+            INSERT INTO ROLES (id, name) VALUES (1, 'admin');
+            INSERT INTO PERMISSIONS (name) VALUES ('prueba');
         `);
   }
 

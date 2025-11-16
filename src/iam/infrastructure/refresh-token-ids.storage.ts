@@ -1,5 +1,5 @@
+import { TokenRepository } from '@iam/application/ports/outbound/token.repository';
 import { Injectable } from '@nestjs/common';
-import { TokenRepository } from '../domain/repositories/token.repository';
 
 export class InvalidatedRefreshTokenError extends Error {}
 
@@ -16,9 +16,7 @@ export class RefreshTokenIdsStorage {
   }
 
   async validate(userId: number, tokenId: string): Promise<boolean> {
-    const storedToken = await this.refreshTokenRepository.findOne({
-      where: { userId, tokenId },
-    });
+    const storedToken = await this.refreshTokenRepository.findByUserId(userId);
 
     if (!storedToken) {
       throw new InvalidatedRefreshTokenError();
@@ -27,6 +25,6 @@ export class RefreshTokenIdsStorage {
   }
 
   async invalidate(userId: number): Promise<void> {
-    await this.refreshTokenRepository.delete(userId);
+    await this.refreshTokenRepository.deleteByUserId(userId);
   }
 }
