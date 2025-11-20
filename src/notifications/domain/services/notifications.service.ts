@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { NotificationChannelEnum } from '@notifications/infrastructure/enums/notification-channel.enum';
 import { EmailProvider } from '@notifications/infrastructure/providers/email/email.provider';
 import { SmsProvider } from '@notifications/infrastructure/providers/sms/sms.provider';
 import { SendNotificationType } from '@notifications/infrastructure/types/send-notification.type';
-import { NotificationChannelEnum } from 'src/notifications/infrastructure/enums/notification-channel.enum';
 
 @Injectable()
 export class NotificationsDomainService {
@@ -22,7 +22,11 @@ export class NotificationsDomainService {
       await this.smsProvider.send(params);
     }
 
-    this.logger.log(`NotificationDomainService request by ${params.channel} channel`);
-    this.logger.log(`NotificationDomainService requested with data: ${JSON.stringify(params)}`);
+    this.logger.log(
+      `NotificationDomainService request by ${params.channel} channel`,
+    );
+    this.logger.log(
+      `NotificationDomainService requested with data: ${JSON.stringify(params)}`,
+    );
   }
 }

@@ -19,10 +19,13 @@ export class ContactUsMapper {
     contactUs.phone = contactUsEntity.phone;
     contactUs.message = contactUsEntity.message;
     contactUs.acceptPrivacyPolicies = contactUsEntity.acceptPrivacyPolicies;
-    contactUs.receiveAdditionalInformation = contactUsEntity.receiveAdditionalInformation;
+    contactUs.receiveAdditionalInformation =
+      contactUsEntity.receiveAdditionalInformation;
 
     if (contactUsEntity.country) {
-      const countryData = this.mapCountryReferenceToDomain(contactUsEntity.country);
+      const countryData = this.mapCountryReferenceToDomain(
+        contactUsEntity.country,
+      );
       contactUs.country = {
         id: countryData?.id,
         name: countryData?.name,
@@ -32,8 +35,12 @@ export class ContactUsMapper {
       };
     }
 
-    contactUs.createdBy = this.mapUserReferenceToDomain(contactUsEntity.createdBy);
-    contactUs.updatedBy = this.mapUserReferenceToDomain(contactUsEntity.updatedBy);
+    contactUs.createdBy = this.mapUserReferenceToDomain(
+      contactUsEntity.createdBy,
+    );
+    contactUs.updatedBy = this.mapUserReferenceToDomain(
+      contactUsEntity.updatedBy,
+    );
     contactUs.createdAt = contactUsEntity.createdAt;
     contactUs.updatedAt = contactUsEntity.updatedAt;
 
@@ -67,7 +74,8 @@ export class ContactUsMapper {
     entity.phone = contactUs.phone;
     entity.message = contactUs.message;
     entity.acceptPrivacyPolicies = contactUs.acceptPrivacyPolicies;
-    entity.receiveAdditionalInformation = contactUs.receiveAdditionalInformation;
+    entity.receiveAdditionalInformation =
+      contactUs.receiveAdditionalInformation;
 
     if (contactUs.country) {
       entity.country = this.mapCountryReferenceToPersistence(contactUs.country);
@@ -89,11 +97,15 @@ export class ContactUsMapper {
     return UserMapper.mapUserReferenceToPersistence(user);
   }
 
-  private static mapCountryReferenceToDomain(countryEntity?: CountryEntity): Country {
+  private static mapCountryReferenceToDomain(
+    countryEntity?: CountryEntity,
+  ): Country {
     return CountryMapper.toDomain(countryEntity);
   }
 
-  private static mapCountryReferenceToPersistence(country?: Partial<Country>): CountryEntity {
+  private static mapCountryReferenceToPersistence(
+    country?: Partial<Country>,
+  ): CountryEntity {
     return CountryMapper.toPersistence(country);
   }
 }

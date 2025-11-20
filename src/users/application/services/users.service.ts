@@ -21,7 +21,7 @@ export class UsersApplicationService {
     const user = await this.usersDomainService.create(createUserDto);
 
     await Promise.all([
-      await this.notificationsApplicationService.send({
+      this.notificationsApplicationService.send({
         channel: NotificationChannelEnum.EMAIL,
         recipient: user.email,
         subject: 'Melvan - Bienvenido a Melvan',
@@ -30,9 +30,12 @@ export class UsersApplicationService {
           body: { password: createUserDto.password },
         },
       }),
-      await this.notificationsApplicationService.send({
+      this.notificationsApplicationService.send({
         channel: NotificationChannelEnum.EMAIL,
-        recipient: process.env.NODE_ENV === 'PROD' ? 'melissapinday@melvanperu.com' : user.email,
+        recipient:
+          process.env.NODE_ENV === 'PROD'
+            ? 'melissapinday@melvanperu.com'
+            : user.email,
         subject: 'Melvan - Nuevo usuario registrado',
         templateId: NotificationEmailTemplateEnum.MELVAN_NEW_USER,
         message: {

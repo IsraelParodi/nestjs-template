@@ -27,7 +27,12 @@ export class OrmTokenRepository implements TokenRepository {
     return this.tokenRepository.create(token);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<Token>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<Token>> {
     const [tokens, total] = await this.tokenRepository.findAndCount({
       where,
       relations,
@@ -40,7 +45,13 @@ export class OrmTokenRepository implements TokenRepository {
     return this.pageableService.getPages({ data, total, start, limit });
   }
 
-  async findOne({ where, relations }: { where: object; relations: string[] }): Promise<Token> {
+  async findOne({
+    where,
+    relations,
+  }: {
+    where: object;
+    relations: string[];
+  }): Promise<Token> {
     const entity = await this.tokenRepository.findOne({ where, relations });
     return TokenMapper.toDomain(entity);
   }

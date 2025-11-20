@@ -8,7 +8,9 @@ import { UpdateComplainsDto } from '@complains/presenters/dto/update-complains.d
 
 @Injectable()
 export class ComplainsApplicationService {
-  constructor(private readonly complainsDomainService: ComplainsDomainService) {}
+  constructor(
+    private readonly complainsDomainService: ComplainsDomainService,
+  ) {}
 
   async create(createComplainsDto: CreateComplainsDto) {
     return await this.complainsDomainService.create(createComplainsDto);

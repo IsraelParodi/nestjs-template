@@ -1,6 +1,12 @@
 import { AuditEntity } from '@common/entities/audit.entity';
 import { CountryEntity } from '@localities/infrastructure/persistance/orm/entities/country.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('contact-us')
 export class ContactUsEntity extends AuditEntity {

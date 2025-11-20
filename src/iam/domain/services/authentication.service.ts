@@ -8,12 +8,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenDto } from '@iam/presenters/dto/iam/refresh-token.dto';
 import { SignInDto } from '@iam/presenters/dto/iam/sign-in.dto';
 import { SignUpDto } from '@iam/presenters/dto/iam/sign-up.dto';
-import { RefreshTokenIdsStorage, InvalidatedRefreshTokenError } from '@iam/infrastructure/refresh-token-ids.storage';
+import {
+  RefreshTokenIdsStorage,
+  InvalidatedRefreshTokenError,
+} from '@iam/infrastructure/refresh-token-ids.storage';
 import jwtConfig from '@iam/infrastructure/config/jwt.config';
 import { HashingService } from '@iam/infrastructure/hashing/hashing.service';
 import { ActiveUserData } from '@iam/infrastructure/interfaces/active-user-data.interface';
@@ -23,7 +26,7 @@ import { NotificationsDomainService } from '@notifications/domain/services/notif
 import { NotificationChannelEnum } from '@notifications/infrastructure/enums/notification-channel.enum';
 import { NotificationEmailTemplateEnum } from '@notifications/infrastructure/enums/notification-email-templates.enum';
 import { SendNotificationType } from '@notifications/infrastructure/types/send-notification.type';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import { ResetPasswordRepository } from '../repositories/reset-password.repository';
 import { UpdateUserDto } from '@users/presenters/dto/update-user.dto';
 import { BO_URL } from '@common/common.constants';
@@ -62,7 +65,10 @@ export class AuthenticationDomainService {
         relations: ['role', 'role.permissions'],
       });
 
-      const isEqual = await this.hashingService.compare(signInDto.password, user.password);
+      const isEqual = await this.hashingService.compare(
+        signInDto.password,
+        user.password,
+      );
 
       if (!isEqual) {
         throw new UnauthorizedException('Email or Password does not match');
@@ -78,10 +84,14 @@ export class AuthenticationDomainService {
   async generateTokens(user: User) {
     const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
-      await this.signToken<Partial<ActiveUserData>>(user.id, this.jwtConfiguration.accessTokenTtl, {
-        email: user.email,
-        role: user.role,
-      }),
+      await this.signToken<Partial<ActiveUserData>>(
+        user.id,
+        this.jwtConfiguration.accessTokenTtl,
+        {
+          email: user.email,
+          role: user.role,
+        },
+      ),
       await this.signToken(user.id, this.jwtConfiguration.refreshTokenTtl, {
         refreshTokenId,
       }),
@@ -121,7 +131,10 @@ export class AuthenticationDomainService {
         where: { id: sub },
       });
 
-      const isValid = await this.refreshTokenIdsStorage.validate(user.id, refreshTokenId);
+      const isValid = await this.refreshTokenIdsStorage.validate(
+        user.id,
+        refreshTokenId,
+      );
 
       if (isValid) {
         await this.refreshTokenIdsStorage.invalidate(user.id);
@@ -142,7 +155,9 @@ export class AuthenticationDomainService {
     const user = await this.userDomainService.findOne({ where: { email } });
     if (!user) throw new NotFoundException('User not found');
 
-    const tokenFound = await this.resetPasswordRepository.findOne({ where: { email } });
+    const tokenFound = await this.resetPasswordRepository.findOne({
+      where: { email },
+    });
     const token = crypto.randomBytes(32).toString('hex');
     const resetLink = `${BO_URL()[process.env.NODE_ENV]}/auth/reset-password?token=${token}`;
 
@@ -167,10 +182,15 @@ export class AuthenticationDomainService {
   }
 
   async resetPassword(token: string, newPassword: string) {
-    const resetToken = await this.resetPasswordRepository.findOne({ where: { token } });
+    const resetToken = await this.resetPasswordRepository.findOne({
+      where: { token },
+    });
     if (!resetToken) throw new BadRequestException('Invalid or expired token');
 
-    const user = await this.userDomainService.findOne({ where: { email: resetToken.email }, select: { id: true } });
+    const user = await this.userDomainService.findOne({
+      where: { email: resetToken.email },
+      select: { id: true },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const updateUserDto = new UpdateUserDto();

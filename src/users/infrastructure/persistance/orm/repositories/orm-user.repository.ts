@@ -5,7 +5,11 @@ import { UserRepository } from '@users/domain/repositories/user.repository';
 import { DeleteResult, In, Repository } from 'typeorm';
 import { UserMapper } from '../mappers/user.mapper';
 import { User } from '@users/domain/user';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { PageableService } from '@common/services/pageable.service';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
 
@@ -42,7 +46,13 @@ export class OrmUserRepository implements UserRepository {
     return UserMapper.toDomain(entity);
   }
 
-  async find({ where, relations, select, start, limit }: IFind): Promise<PaginatedResult<User>> {
+  async find({
+    where,
+    relations,
+    select,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<User>> {
     const [users, total] = await this.userRepository.findAndCount({
       where,
       relations,
@@ -61,7 +71,10 @@ export class OrmUserRepository implements UserRepository {
     return this.userRepository.softDelete({ id });
   }
 
-  async deleteMany(deleteUserDto: DeleteManyDto, deletedBy: Partial<UserEntity>): Promise<DeleteResult> {
+  async deleteMany(
+    deleteUserDto: DeleteManyDto,
+    deletedBy: Partial<UserEntity>,
+  ): Promise<DeleteResult> {
     const { ids } = deleteUserDto;
     await this.userRepository.update({ id: In(ids) }, { deletedBy: deletedBy });
     return this.userRepository.softDelete({ id: In(ids) });

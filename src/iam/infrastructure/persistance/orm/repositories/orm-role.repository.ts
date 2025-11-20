@@ -5,7 +5,11 @@ import { RoleRepository } from '@iam/domain/repositories/role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { Role } from '@users/domain/role';
 import { RoleMapper } from '../mappers/role.mapper';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { PageableService } from '@common/services/pageable.service';
 
 @Injectable()
@@ -37,7 +41,12 @@ export class OrmRoleRepository implements RoleRepository {
     return RoleMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<Role>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<Role>> {
     const [roles, total] = await this.roleRepository.findAndCount({
       where,
       relations,

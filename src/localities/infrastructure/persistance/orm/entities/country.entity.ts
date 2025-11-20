@@ -105,7 +105,6 @@ export class CountryEntity {
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'wikiDataId' })
   wikiDataId: string;
 
-  // Relationships
   @OneToMany(() => StateEntity, (state) => state.countryId)
   states: StateEntity[];
 }

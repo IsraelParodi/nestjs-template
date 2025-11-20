@@ -4,7 +4,9 @@ import { SendNotificationType } from '@notifications/infrastructure/types/send-n
 
 @Injectable()
 export class NotificationsApplicationService {
-  constructor(private readonly notificationsDomainService: NotificationsDomainService) {}
+  constructor(
+    private readonly notificationsDomainService: NotificationsDomainService,
+  ) {}
 
   async send(params: SendNotificationType) {
     await this.notificationsDomainService.send(params);

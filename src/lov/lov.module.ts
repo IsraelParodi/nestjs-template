@@ -14,7 +14,10 @@ import { ListOfValuesDetailDomainService } from './domain/services/lov-detail.se
 import { ListOfValuesDetailEntity } from './infrastructure/persistance/orm/entities/lov-detail.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ListOfValuesEntity, ListOfValuesDetailEntity]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([ListOfValuesEntity, ListOfValuesDetailEntity]),
+    UsersModule,
+  ],
   controllers: [ListOfValuesController],
   providers: [
     ListOfValuesApplicationService,

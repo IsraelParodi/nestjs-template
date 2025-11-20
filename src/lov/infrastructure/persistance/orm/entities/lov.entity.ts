@@ -13,6 +13,9 @@ export class ListOfValuesEntity extends AuditEntity {
   @Column()
   description: string;
 
-  @OneToMany(() => ListOfValuesDetailEntity, (list_of_values_detail) => list_of_values_detail.key)
+  @OneToMany(
+    () => ListOfValuesDetailEntity,
+    (list_of_values_detail) => list_of_values_detail.key,
+  )
   values: ListOfValuesDetailEntity[];
 }

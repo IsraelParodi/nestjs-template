@@ -1,4 +1,3 @@
-// src/common/controllers/debug.controller.ts
 import { Controller, Get } from '@nestjs/common';
 import { AuthInspectorService } from '../services/auth-inspector.service';
 

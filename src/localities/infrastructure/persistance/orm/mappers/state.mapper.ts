@@ -6,7 +6,7 @@ export class StateMapper {
     const state = new State(entity.id);
 
     state.name = entity.name;
-    state.countryId = entity.countryId; // This now maps correctly
+    state.countryId = entity.countryId;
     state.countryCode = entity.countryCode;
     state.fipsCode = entity.fipsCode;
     state.iso2 = entity.iso2;
@@ -26,7 +26,7 @@ export class StateMapper {
 
     entity.id = state.id;
     entity.name = state.name;
-    entity.countryId = state.countryId; // This now maps correctly
+    entity.countryId = state.countryId;
     entity.countryCode = state.countryCode;
     entity.fipsCode = state.fipsCode;
     entity.iso2 = state.iso2;

@@ -28,7 +28,9 @@ export class QuotationsMapper {
     quotations.destination = quotationsEntity.destination;
 
     if (quotationsEntity.country) {
-      const countryData = this.mapCountryReferenceToDomain(quotationsEntity.country);
+      const countryData = this.mapCountryReferenceToDomain(
+        quotationsEntity.country,
+      );
       quotations.country = {
         id: countryData?.id,
         name: countryData?.name,
@@ -39,8 +41,12 @@ export class QuotationsMapper {
     }
 
     quotations.industryType = quotationsEntity.industryType;
-    quotations.createdBy = this.mapUserReferenceToDomain(quotationsEntity.createdBy);
-    quotations.updatedBy = this.mapUserReferenceToDomain(quotationsEntity.updatedBy);
+    quotations.createdBy = this.mapUserReferenceToDomain(
+      quotationsEntity.createdBy,
+    );
+    quotations.updatedBy = this.mapUserReferenceToDomain(
+      quotationsEntity.updatedBy,
+    );
     quotations.createdAt = quotationsEntity.createdAt;
     quotations.updatedAt = quotationsEntity.updatedAt;
 
@@ -68,7 +74,9 @@ export class QuotationsMapper {
     entity.destination = quotations.destination;
 
     if (quotations.country) {
-      entity.country = this.mapCountryReferenceToPersistence(quotations.country);
+      entity.country = this.mapCountryReferenceToPersistence(
+        quotations.country,
+      );
     }
 
     entity.industryType = quotations.industryType;
@@ -88,11 +96,15 @@ export class QuotationsMapper {
     return UserMapper.mapUserReferenceToPersistence(user);
   }
 
-  private static mapCountryReferenceToDomain(countryEntity?: CountryEntity): Country {
+  private static mapCountryReferenceToDomain(
+    countryEntity?: CountryEntity,
+  ): Country {
     return CountryMapper.toDomain(countryEntity);
   }
 
-  private static mapCountryReferenceToPersistence(country?: Partial<Country>): CountryEntity {
+  private static mapCountryReferenceToPersistence(
+    country?: Partial<Country>,
+  ): CountryEntity {
     return CountryMapper.toPersistence(country);
   }
 }

@@ -9,7 +9,9 @@ import { ContactUsMapper } from '@contact-us/infrastructure/persistance/orm/mapp
 
 @Injectable()
 export class ContactUsApplicationService {
-  constructor(private readonly contactUsDomainService: ContactUsDomainService) {}
+  constructor(
+    private readonly contactUsDomainService: ContactUsDomainService,
+  ) {}
 
   async create(createContactUsDto: CreateContactUsDto) {
     const contactUs = ContactUsMapper.fromDtotoDomain(createContactUsDto);

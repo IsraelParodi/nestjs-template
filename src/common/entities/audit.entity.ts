@@ -1,4 +1,10 @@
-import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 import type { UserEntity } from '@users/infrastructure/persistance/orm/entities/user.entity';
 

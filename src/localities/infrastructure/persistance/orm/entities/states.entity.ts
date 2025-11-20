@@ -8,10 +8,10 @@ export class StateEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
-  @Column({ type: 'int', name: 'country_id', nullable: false }) // Specify column name
+  @Column({ type: 'int', name: 'country_id', nullable: false })
   countryId: number;
 
-  @Column({ type: 'char', length: 2, name: 'country_code', nullable: false }) // Specify column name
+  @Column({ type: 'char', length: 2, name: 'country_code', nullable: false })
   countryCode: string;
 
   @Column({ type: 'varchar', length: 255, name: 'fips_code', nullable: true })

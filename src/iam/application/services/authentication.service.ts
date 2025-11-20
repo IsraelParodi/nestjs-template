@@ -8,9 +8,13 @@ import { ForgotPasswordDto } from '@iam/presenters/dto/iam/forgot-password.dto';
 
 @Injectable()
 export class AuthenticationApplicationService {
-  private readonly logger: Logger = new Logger(AuthenticationApplicationService.name);
+  private readonly logger: Logger = new Logger(
+    AuthenticationApplicationService.name,
+  );
 
-  constructor(private readonly authenticationDomainService: AuthenticationDomainService) {}
+  constructor(
+    private readonly authenticationDomainService: AuthenticationDomainService,
+  ) {}
 
   async signUp(signUpDto: SignUpDto) {
     try {
@@ -27,17 +31,24 @@ export class AuthenticationApplicationService {
 
   async refreshTokens(refreshTokenDto: RefreshTokenDto) {
     try {
-      return await this.authenticationDomainService.refreshTokens(refreshTokenDto);
+      return await this.authenticationDomainService.refreshTokens(
+        refreshTokenDto,
+      );
     } catch {
       throw new UnauthorizedException();
     }
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    return this.authenticationDomainService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);
+    return this.authenticationDomainService.resetPassword(
+      resetPasswordDto.token,
+      resetPasswordDto.password,
+    );
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    return this.authenticationDomainService.forgotPassword(forgotPasswordDto.email);
+    return this.authenticationDomainService.forgotPassword(
+      forgotPasswordDto.email,
+    );
   }
 }

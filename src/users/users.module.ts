@@ -16,7 +16,11 @@ import { NotificationsModule } from '@notifications/notifications.module';
 import { LocalitiesModule } from '@localities/localities.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RoleEntity, UserEntity]), NotificationsModule, LocalitiesModule],
+  imports: [
+    TypeOrmModule.forFeature([RoleEntity, UserEntity]),
+    NotificationsModule,
+    LocalitiesModule,
+  ],
   controllers: [UsersController],
   providers: [
     UsersApplicationService,
@@ -35,6 +39,11 @@ import { LocalitiesModule } from '@localities/localities.module';
       useClass: OrmRoleRepository,
     },
   ],
-  exports: [UsersApplicationService, UsersDomainService, UserRepository, RolesDomainService],
+  exports: [
+    UsersApplicationService,
+    UsersDomainService,
+    UserRepository,
+    RolesDomainService,
+  ],
 })
 export class UsersModule {}

@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import * as dotenv from 'dotenv';
 import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
+dotenv.config();
+
+describe('[Feature] - Users - /users', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -15,10 +17,13 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  it.todo('Create User [POST /]');
+  it.todo('List Users [GET /]');
+  it.todo('Get User [GET /:id]');
+  it.todo('Update User [PATCH /:id]');
+  it.todo('Delete User [DELETE /:id]');
+
+  afterAll(async () => {
+    await app.close();
   });
 });

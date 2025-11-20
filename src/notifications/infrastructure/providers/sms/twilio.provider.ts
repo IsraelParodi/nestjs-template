@@ -10,14 +10,17 @@ import { SendSmsType } from '@notifications/infrastructure/types/send-sms.type';
 
 @Injectable()
 export class TwilioProvider implements SmsProvider {
-  private twilioClient: twilio.Twilio;
+  private readonly twilioClient: twilio.Twilio;
   private readonly logger = new Logger(TwilioProvider.name);
 
   constructor(
     @Inject(twilioConfig.KEY)
     private readonly twilioConfiguration: ConfigType<typeof twilioConfig>,
   ) {
-    this.twilioClient = twilio(this.twilioConfiguration.apiAccountSid, this.twilioConfiguration.apiToken);
+    this.twilioClient = twilio(
+      this.twilioConfiguration.apiAccountSid,
+      this.twilioConfiguration.apiToken,
+    );
   }
 
   async send(params: SendSmsType) {
@@ -30,7 +33,8 @@ export class TwilioProvider implements SmsProvider {
     };
 
     try {
-      const smsSent = await this.twilioClient.messages.create(paramsTwilioCreate);
+      const smsSent =
+        await this.twilioClient.messages.create(paramsTwilioCreate);
       this.logger.log(`SMS sent successfully to ${recipient}`);
 
       return smsSent;

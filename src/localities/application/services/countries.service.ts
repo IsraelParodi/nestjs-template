@@ -6,7 +6,9 @@ import { CountriesDomainService } from '@localities/domain/services/countries.se
 
 @Injectable()
 export class CountriesApplicationService {
-  constructor(private readonly countriesDomainService: CountriesDomainService) {}
+  constructor(
+    private readonly countriesDomainService: CountriesDomainService,
+  ) {}
 
   findAll(paginationQueryDto: PaginationQueryDto) {
     return this.countriesDomainService.findAll(paginationQueryDto);

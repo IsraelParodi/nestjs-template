@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { RolesApplicationService } from '@iam/application/services/roles.service';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
@@ -12,7 +21,9 @@ import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
 @Roles(RoleEnum.Admin)
 @Controller('roles')
 export class RolesController {
-  constructor(private readonly rolesApplicationService: RolesApplicationService) {}
+  constructor(
+    private readonly rolesApplicationService: RolesApplicationService,
+  ) {}
 
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {

@@ -1,4 +1,4 @@
-import { Country } from 'src/localities/domain/country';
+import { Country } from '@localities/domain/country';
 import { CountryEntity } from '../entities/country.entity';
 
 export class CountryMapper {

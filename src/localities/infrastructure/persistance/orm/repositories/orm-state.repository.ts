@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { StateRepository } from '@localities/domain/repositories/state.repository';
 import { StateEntity } from '../entities/states.entity';
 import { StateMapper } from '../mappers/state.mapper';
@@ -41,7 +45,12 @@ export class OrmStateRepository implements StateRepository {
     return StateMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<State>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<State>> {
     const [countries, total] = await this.stateRepository.findAndCount({
       where,
       relations,

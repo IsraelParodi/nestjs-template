@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Query, ParseIntPipe, OnModuleInit, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  ParseIntPipe,
+  OnModuleInit,
+  NotFoundException,
+} from '@nestjs/common';
 import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
 import { CountriesApplicationService } from '@localities/application/services/countries.service';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
@@ -57,11 +65,17 @@ export class LocalitiesController implements OnModuleInit {
     @Query() { start = 0, limit = null }: PaginationQueryDto,
     @Param('countryId', ParseIntPipe) countryId: number,
   ) {
-    return this.statesApplicationService.findAll({ start, limit }, { where: { countryId } });
+    return this.statesApplicationService.findAll(
+      { start, limit },
+      { where: { countryId } },
+    );
   }
 
   @Get('countries/:countryId/states/:stateId')
-  findStatesById(@Param('countryId', ParseIntPipe) countryId: number, @Param('stateId', ParseIntPipe) id: number) {
+  findStatesById(
+    @Param('countryId', ParseIntPipe) countryId: number,
+    @Param('stateId', ParseIntPipe) id: number,
+  ) {
     return this.statesApplicationService.findOne({
       where: { countryId, id },
     });

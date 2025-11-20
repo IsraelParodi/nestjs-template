@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from '@iam/infrastructure/enum/auth-type.enum';
@@ -13,17 +24,29 @@ import { PaginationQueryQuotationsDto } from '../dto/pagination-query-quotations
 @Auth(AuthType.None)
 @Controller('quotations')
 export class QuotationsController {
-  constructor(private readonly quotationsApplicationService: QuotationsApplicationService) {}
+  constructor(
+    private readonly quotationsApplicationService: QuotationsApplicationService,
+  ) {}
 
   @Post()
-  create(@Body() createQuotationsDto: CreateQuotationsDto, @Req() request: Request) {
+  create(
+    @Body() createQuotationsDto: CreateQuotationsDto,
+    @Req() request: Request,
+  ) {
     createQuotationsDto.createdBy = request.user?.sub;
     return this.quotationsApplicationService.create(createQuotationsDto);
   }
 
   @Get()
-  findAll(@Query() { start = 0, limit = 100, ...filters }: PaginationQueryQuotationsDto) {
-    return this.quotationsApplicationService.findAll({ start, limit, ...filters });
+  findAll(
+    @Query()
+    { start = 0, limit = 100, ...filters }: PaginationQueryQuotationsDto,
+  ) {
+    return this.quotationsApplicationService.findAll({
+      start,
+      limit,
+      ...filters,
+    });
   }
 
   @Get(':id')
@@ -55,6 +78,9 @@ export class QuotationsController {
   @Roles(RoleEnum.Admin)
   removeMany(@Body() deleteManyDto: DeleteManyDto, @Req() request: Request) {
     const deletedBy = request.user.sub;
-    return this.quotationsApplicationService.removeMany(deleteManyDto, deletedBy);
+    return this.quotationsApplicationService.removeMany(
+      deleteManyDto,
+      deletedBy,
+    );
   }
 }

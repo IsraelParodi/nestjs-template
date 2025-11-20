@@ -1,7 +1,14 @@
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+import {
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
 
 @ValidatorConstraint({ async: false })
-export class IsDocumentNumberValidConstraint implements ValidatorConstraintInterface {
+export class IsDocumentNumberValidConstraint
+  implements ValidatorConstraintInterface
+{
   validate(documentNumber: string, args: ValidationArguments): boolean {
     const { documentType } = args.object as any;
 

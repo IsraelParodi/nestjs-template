@@ -26,7 +26,6 @@ export class AuthInspectorService {
       const controllerPath = this.getControllerPath(instance);
       const classAuthType = this.getClassAuthType(instance);
 
-      // Using getAllMethodNames instead of scanFromPrototype
       const methodNames = this.metadataScanner.getAllMethodNames(prototype);
 
       methodNames.forEach((methodName) => {
@@ -36,32 +35,50 @@ export class AuthInspectorService {
         const methodAuthType = this.getMethodAuthType(method, classAuthType);
         const roles = this.reflector.get(ROLES_KEY, method) || [];
         const fullPath = this.getFullPath(method, controllerPath);
-        const methodMetadata = this.createMetadata(method, methodName, fullPath, methodAuthType, roles, controllerName);
+        const methodMetadata = this.createMetadata(
+          method,
+          methodName,
+          fullPath,
+          methodAuthType,
+          roles,
+          controllerName,
+        );
 
-        this.categorizeEndpoint(methodAuthType, roles, methodMetadata, protectedEndpoints, publicEndpoints);
+        this.categorizeEndpoint(
+          methodAuthType,
+          roles,
+          methodMetadata,
+          protectedEndpoints,
+          publicEndpoints,
+        );
       });
     });
 
     return this.createResult(publicEndpoints, protectedEndpoints);
   }
 
-  // Helper function to get the controller path
   private getControllerPath(instance: any): string {
-    const controllerPath = this.reflector.get('path', instance.constructor) || '';
-    return controllerPath === '' || controllerPath === '/' ? `/${instance.constructor.name}` : controllerPath;
+    const controllerPath =
+      this.reflector.get('path', instance.constructor) || '';
+    return controllerPath === '' || controllerPath === '/'
+      ? `/${instance.constructor.name}`
+      : controllerPath;
   }
 
-  // Helper function to get the class auth type
   private getClassAuthType(instance: any): AuthType | undefined {
-    const classAuthTypes: AuthType[] = this.reflector.get(AUTH_TYPE_KEY, instance.constructor) || [];
+    const classAuthTypes: AuthType[] =
+      this.reflector.get(AUTH_TYPE_KEY, instance.constructor) || [];
     if (classAuthTypes.includes(AuthType.Bearer)) return AuthType.Bearer;
     if (classAuthTypes.includes(AuthType.None)) return AuthType.None;
     return undefined;
   }
 
-  // Helper function to get the method auth type
-  private getMethodAuthType(method: Function, classAuthType: AuthType | undefined): AuthType | undefined {
-    const methodAuthTypes: AuthType[] = this.reflector.get(AUTH_TYPE_KEY, method) || [];
+  private getMethodAuthType(
+    method: Function,
+    classAuthType: AuthType | undefined,
+  ): AuthType | undefined {
+    const methodAuthTypes: AuthType[] =
+      this.reflector.get(AUTH_TYPE_KEY, method) || [];
     if (methodAuthTypes.length > 0) {
       if (methodAuthTypes.includes(AuthType.Bearer)) return AuthType.Bearer;
       if (methodAuthTypes.includes(AuthType.None)) return AuthType.None;
@@ -69,13 +86,13 @@ export class AuthInspectorService {
     return classAuthType;
   }
 
-  // Helper function to get the full path of the endpoint
   private getFullPath(method: Function, controllerPath: string): string {
     const routePath = this.reflector.get('path', method) || '';
-    return routePath === '' || routePath === '/' ? `/${controllerPath}` : `/${controllerPath}/${routePath}`;
+    return routePath === '' || routePath === '/'
+      ? `/${controllerPath}`
+      : `/${controllerPath}/${routePath}`;
   }
 
-  // Helper function to create metadata
   private createMetadata(
     method: Function,
     methodName: string,
@@ -89,15 +106,21 @@ export class AuthInspectorService {
       controller: controllerName,
       method: methodName,
       httpMethod: this.getHttpMethodName(httpMethod),
-      auth: authType !== undefined ? AuthType[authType] : 'Unknown',
+      auth: authType === undefined ? 'Unknown' : AuthType[authType],
       roles: roles,
       path: fullPath,
     };
   }
 
-  // Helper function to categorize the endpoint
-  private categorizeEndpoint(authType: AuthType, roles: string[], metadata: any, protectedEndpoints, publicEndpoints) {
-    const target = authType === AuthType.Bearer ? protectedEndpoints : publicEndpoints;
+  private categorizeEndpoint(
+    authType: AuthType,
+    roles: string[],
+    metadata: any,
+    protectedEndpoints,
+    publicEndpoints,
+  ) {
+    const target =
+      authType === AuthType.Bearer ? protectedEndpoints : publicEndpoints;
     if (roles.includes('admin')) {
       target.admin.push(metadata);
     } else if (roles.length === 0) {
@@ -110,7 +133,6 @@ export class AuthInspectorService {
     }
   }
 
-  // Helper function to create the result object
   private createResult(publicEndpoints: any, protectedEndpoints: any) {
     const result = [];
 
@@ -118,7 +140,10 @@ export class AuthInspectorService {
       const categories = [
         { role: 'admin', endpoints: endpoints.admin },
         { role: 'none', endpoints: endpoints.none },
-        ...Object.keys(endpoints.other).map((role) => ({ role, endpoints: endpoints.other[role] })),
+        ...Object.keys(endpoints.other).map((role) => ({
+          role,
+          endpoints: endpoints.other[role],
+        })),
       ]
         .filter((category) => category.endpoints.length > 0)
         .map((category) => ({
@@ -127,7 +152,14 @@ export class AuthInspectorService {
         }));
 
       if (categories.length > 0) {
-        result.push({ type, categories, totalCount: categories.reduce((sum, category) => sum + category.count, 0) });
+        result.push({
+          type,
+          categories,
+          totalCount: categories.reduce(
+            (sum, category) => sum + category.count,
+            0,
+          ),
+        });
       }
     };
 
@@ -137,7 +169,6 @@ export class AuthInspectorService {
     return result;
   }
 
-  // Helper function to convert RequestMethod to string representation
   private getHttpMethodName(method: RequestMethod): string {
     const methodMap = {
       [RequestMethod.GET]: 'GET',

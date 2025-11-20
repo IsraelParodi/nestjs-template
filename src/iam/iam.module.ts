@@ -33,7 +33,13 @@ import { ResetPasswordRepository } from './domain/repositories/reset-password.re
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, TokenEntity, RoleEntity, PermissionEntity, ResetPasswordEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      TokenEntity,
+      RoleEntity,
+      PermissionEntity,
+      ResetPasswordEntity,
+    ]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     UsersModule,

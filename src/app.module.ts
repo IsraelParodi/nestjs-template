@@ -3,7 +3,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
-import appConfig from 'app.config';
+import appConfig from './../app.config';
 import * as Joi from '@hapi/joi';
 import { IamModule } from './iam/iam.module';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -32,23 +32,37 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
     ]),
     UsersModule,
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DATABASE_HOST,
-        port: +process.env.DATABASE_PORT,
-        username: process.env.DATABASE_USER,
-        password: process.env.DATABASE_PASSWORD,
-        database: process.env.DATABASE_NAME,
-        autoLoadEntities: true,
-        synchronize: false,
-        logging: true,
-        ssl:
-          process.env.NODE_ENV !== 'LOCAL'
-            ? {
-                ca: process.env.CA_CERT,
-              }
+      useFactory: () => {
+        return {
+          type: 'postgres',
+          host:
+            process.env.NODE_ENV === 'test'
+              ? process.env.DATABASE_HOST_TEST
+              : process.env.DATABASE_HOST,
+          port:
+            process.env.NODE_ENV === 'test'
+              ? +process.env.DATABASE_PORT_TEST
+              : +process.env.DATABASE_PORT,
+          username:
+            process.env.NODE_ENV === 'test'
+              ? process.env.DATABASE_USER_TEST
+              : process.env.DATABASE_USER,
+          password:
+            process.env.NODE_ENV === 'test'
+              ? process.env.DATABASE_PASSWORD_TEST
+              : process.env.DATABASE_PASSWORD,
+          database:
+            process.env.NODE_ENV === 'test'
+              ? process.env.DATABASE_NAME_TEST
+              : process.env.DATABASE_NAME,
+          autoLoadEntities: true,
+          synchronize: false,
+          logging: true,
+          ssl: ['PROD', 'STAGING'].includes(process.env.NODE_ENV || '')
+            ? { ca: process.env.CA_CERT }
             : false,
-      }),
+        };
+      },
     }),
     IamModule,
     CommonModule,

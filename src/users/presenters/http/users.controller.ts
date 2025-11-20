@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from '@iam/infrastructure/enum/auth-type.enum';
@@ -14,7 +25,9 @@ import { PaginationQueryUsersDto } from '../dto/pagination-query-users.dto';
 @Auth(AuthType.Bearer)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersApplicationService: UsersApplicationService) {}
+  constructor(
+    private readonly usersApplicationService: UsersApplicationService,
+  ) {}
 
   @Roles(RoleEnum.Admin)
   @Post()
@@ -46,7 +59,11 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto, @Req() request: Request) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() request: Request,
+  ) {
     updateUserDto.updatedBy = request.user.sub;
     return this.usersApplicationService.update(id, updateUserDto);
   }

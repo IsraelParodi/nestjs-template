@@ -2,7 +2,13 @@ import { ComplainsStatus } from '@complains/infrastructure/enums/complains-statu
 import { AuditEntity } from '@common/entities/audit.entity';
 import { CountryEntity } from '@localities/infrastructure/persistance/orm/entities/country.entity';
 import { StateEntity } from '@localities/infrastructure/persistance/orm/entities/states.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('complains')
 export class ComplainsEntity extends AuditEntity {

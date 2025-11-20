@@ -7,13 +7,10 @@ import { UsersDomainService } from '@users/domain/services/users.service';
 import { UpdateQuotationsDto } from '@quotations/presenters/dto/update-quotations.dto';
 import { CountriesDomainService } from '@localities/domain/services/countries.service';
 import { ListOfValuesDomainService } from '@lov/domain/services/lov.service';
-import { NotificationChannelEnum } from '@notifications/infrastructure/enums/notification-channel.enum';
-import { NotificationEmailTemplateEnum } from '@notifications/infrastructure/enums/notification-email-templates.enum';
 import { NotificationsApplicationService } from '@notifications/application/services/notifications.service';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
 import { PaginationQueryQuotationsDto } from '@quotations/presenters/dto/pagination-query-quotations.dto';
 import { EntityManager, ILike } from 'typeorm';
-import { QuotationsEntity } from '@quotations/infrastructure/persistance/orm/entities/quotations.entity';
 
 @Injectable()
 export class QuotationsDomainService {
@@ -48,67 +45,6 @@ export class QuotationsDomainService {
       quotations,
       manager,
     );
-
-    const {
-      name,
-      lastname,
-      userType,
-      country,
-      documentNumber,
-      phone,
-      email,
-      transportType,
-      shippingType,
-      cargoVolume,
-      industryType,
-      origin,
-      destination,
-    } = quotationsSaved;
-
-    // await Promise.all([
-    //   this.notificationsApplicationService.send({
-    //     channel: NotificationChannelEnum.EMAIL,
-    //     recipient: quotations.email,
-    //     subject: 'Melvan - Solicitud de cotización',
-    //     templateId: NotificationEmailTemplateEnum.USER_QUOTATION,
-    //     message: {
-    //       body: {
-    //         transportType,
-    //         shippingType,
-    //         origin,
-    //         destination,
-    //       },
-    //     },
-    //   }),
-    //   this.notificationsApplicationService.send({
-    //     channel: NotificationChannelEnum.EMAIL,
-    //     recipient:
-    //       process.env.NODE_ENV === 'PROD'
-    //         ? 'melissapinday@melvanperu.com'
-    //         : quotations.email,
-    //     subject: 'Melvan - Solicitud de cotización',
-    //     templateId: NotificationEmailTemplateEnum.MELVAN_QUOTATION,
-    //     message: {
-    //       body: {
-    //         name,
-    //         lastname,
-    //         userType,
-    //         country: country.name,
-    //         documentNumber,
-    //         phone,
-    //         email,
-    //         transportType,
-    //         shippingType,
-    //         cargoVolume,
-    //         industryType,
-    //         origin,
-    //         destination,
-    //       },
-    //     },
-    //   }),
-    // ]);
-
-    // throw new Error('oops');
 
     return quotationsSaved;
   }
@@ -174,8 +110,6 @@ export class QuotationsDomainService {
       industryType,
       transportType,
       documentType,
-      origin,
-      destination,
       shippingType,
       containerCode,
     } = dto;

@@ -10,7 +10,9 @@ import { CreateListOfValuesDto } from '@lov/presenters/dto/create-lov.dto';
 
 @Injectable()
 export class ListOfValuesApplicationService {
-  constructor(private readonly listOfValuesDomainService: ListOfValuesDomainService) {}
+  constructor(
+    private readonly listOfValuesDomainService: ListOfValuesDomainService,
+  ) {}
 
   async create(createListOfValuesDto: CreateListOfValuesDto) {
     return await this.listOfValuesDomainService.create(createListOfValuesDto);

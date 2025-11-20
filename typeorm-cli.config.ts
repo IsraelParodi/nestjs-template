@@ -12,10 +12,7 @@ export default new DataSource({
   database: process.env.DATABASE_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
-  ssl:
-    process.env.NODE_ENV !== 'LOCAL'
-      ? {
-          ca: process.env.CA_CERT,
-        }
-      : false,
+  ssl: ['PROD', 'STAGING'].includes(process.env.NODE_ENV || '')
+    ? { ca: process.env.CA_CERT }
+    : false,
 });

@@ -10,10 +10,18 @@ import { CreateListOfValuesDetailDto } from '@lov/presenters/dto/create-lov-deta
 
 @Injectable()
 export class ListOfValuesDetailApplicationService {
-  constructor(private readonly listOfValuesDetailDomainService: ListOfValuesDetailDomainService) {}
+  constructor(
+    private readonly listOfValuesDetailDomainService: ListOfValuesDetailDomainService,
+  ) {}
 
-  async create(createListOfValuesDto: CreateListOfValuesDetailDto, lovKey: string) {
-    return await this.listOfValuesDetailDomainService.create(createListOfValuesDto, lovKey);
+  async create(
+    createListOfValuesDto: CreateListOfValuesDetailDto,
+    lovKey: string,
+  ) {
+    return await this.listOfValuesDetailDomainService.create(
+      createListOfValuesDto,
+      lovKey,
+    );
   }
 
   findAll(paginationQueryDto: PaginationQueryDto) {
@@ -29,7 +37,10 @@ export class ListOfValuesDetailApplicationService {
   }
 
   update(id: number, updateListOfValuesDto: UpdateListOfValuesDetailDto) {
-    return this.listOfValuesDetailDomainService.update(id, updateListOfValuesDto);
+    return this.listOfValuesDetailDomainService.update(
+      id,
+      updateListOfValuesDto,
+    );
   }
 
   remove(id: number) {

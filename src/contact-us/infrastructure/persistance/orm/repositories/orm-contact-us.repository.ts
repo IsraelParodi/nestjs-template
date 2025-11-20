@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, In, Repository } from 'typeorm';
 import { ContactUsMapper } from '../mappers/contact-us.mapper';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { ContactUsEntity } from '../entities/contact-us.entity';
 import { ContactUs } from '@contact-us/domain/contact-us';
 import { ContactUsRepository } from '@contact-us/domain/repositories/contact-us.repository';
@@ -37,7 +41,11 @@ export class OrmContactUsRepository implements ContactUsRepository {
     return this.contactUsRepository.save(contactUs);
   }
 
-  async findOne({ where, relations, select }: IFindOne<ContactUs>): Promise<ContactUs> {
+  async findOne({
+    where,
+    relations,
+    select,
+  }: IFindOne<ContactUs>): Promise<ContactUs> {
     const entity = await this.contactUsRepository.findOne({
       where,
       relations,
@@ -52,7 +60,12 @@ export class OrmContactUsRepository implements ContactUsRepository {
     return ContactUsMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<ContactUs>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<ContactUs>> {
     const [contactUs, total] = await this.contactUsRepository.findAndCount({
       where,
       relations,
@@ -60,19 +73,30 @@ export class OrmContactUsRepository implements ContactUsRepository {
       take: limit,
     });
 
-    const data = contactUs.map((contactUs) => ContactUsMapper.toDomain(contactUs));
+    const data = contactUs.map((contactUs) =>
+      ContactUsMapper.toDomain(contactUs),
+    );
 
     return this.pageableService.getPages({ data, total, start, limit });
   }
 
-  async delete(id: number, deletedBy: Partial<UserEntity>): Promise<DeleteResult> {
+  async delete(
+    id: number,
+    deletedBy: Partial<UserEntity>,
+  ): Promise<DeleteResult> {
     await this.contactUsRepository.update({ id }, { deletedBy });
     return this.contactUsRepository.softDelete({ id });
   }
 
-  async deleteMany(deleteManyDto: DeleteManyDto, deletedBy: Partial<UserEntity>): Promise<DeleteResult> {
+  async deleteMany(
+    deleteManyDto: DeleteManyDto,
+    deletedBy: Partial<UserEntity>,
+  ): Promise<DeleteResult> {
     const { ids } = deleteManyDto;
-    await this.contactUsRepository.update({ id: In(ids) }, { deletedBy: deletedBy });
+    await this.contactUsRepository.update(
+      { id: In(ids) },
+      { deletedBy: deletedBy },
+    );
     return this.contactUsRepository.softDelete({ id: In(ids) });
   }
 

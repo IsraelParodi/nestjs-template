@@ -1,7 +1,13 @@
 import { AuditEntity } from '@common/entities/audit.entity';
 import { RoleEntity } from '@iam/infrastructure/persistance/orm/entities/role.entity';
 import { CountryEntity } from '@localities/infrastructure/persistance/orm/entities/country.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class UserEntity extends AuditEntity {

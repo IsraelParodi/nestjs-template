@@ -1,7 +1,13 @@
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import {
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 
 @ValidatorConstraint({ async: false })
-export class IsNationalTaxpayerRegistryValidConstraint implements ValidatorConstraintInterface {
+export class IsNationalTaxpayerRegistryValidConstraint
+  implements ValidatorConstraintInterface
+{
   validate(nationalTaxpayerRegistry: string): boolean {
     const regex: RegExp = /^(?:20|10)\d{9}$/;
 

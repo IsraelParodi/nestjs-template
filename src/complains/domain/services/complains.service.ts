@@ -40,20 +40,35 @@ export class ComplainsDomainService {
     } = createComplainsDto;
     const whereUserCreator = { id: userCreator };
 
-    const [creator, country, state, documentType, serviceType, currency, type] = await Promise.all([
-      userCreator && this.usersDomainService.findOne({ where: whereUserCreator }),
-      complainerCountry &&
-        this.countriesDomainService.findOne({
-          where: { id: complainerCountry },
-        }),
-      complainerState && this.statesDomainService.findOne({ where: { id: complainerState } }),
-      documentTypeId && this.listOfValuesDomainService.findChildByKey('document_type', documentTypeId),
-      serviceTypeId && this.listOfValuesDomainService.findChildByKey('service_type', serviceTypeId),
-      currencyId && this.listOfValuesDomainService.findChildByKey('currency', currencyId),
-      typeId && this.listOfValuesDomainService.findChildByKey('complaint_type', typeId),
-    ]);
+    const [creator, country, state, documentType, serviceType, currency, type] =
+      await Promise.all([
+        userCreator &&
+          this.usersDomainService.findOne({ where: whereUserCreator }),
+        complainerCountry &&
+          this.countriesDomainService.findOne({
+            where: { id: complainerCountry },
+          }),
+        complainerState &&
+          this.statesDomainService.findOne({ where: { id: complainerState } }),
+        documentTypeId &&
+          this.listOfValuesDomainService.findChildByKey(
+            'document_type',
+            documentTypeId,
+          ),
+        serviceTypeId &&
+          this.listOfValuesDomainService.findChildByKey(
+            'service_type',
+            serviceTypeId,
+          ),
+        currencyId &&
+          this.listOfValuesDomainService.findChildByKey('currency', currencyId),
+        typeId &&
+          this.listOfValuesDomainService.findChildByKey(
+            'complaint_type',
+            typeId,
+          ),
+      ]);
 
-    //Valida si el usuario existe
     if (userCreator && !creator) {
       const errorMessage = `No existe admin con id: ${userCreator}`;
       this.logger.debug(errorMessage);
@@ -63,7 +78,10 @@ export class ComplainsDomainService {
 
     this.logger.debug(`Creator found: ${JSON.stringify(creator)}`);
 
-    const validateDocumentNumber = this.validateDocumentNumber(documentType.name, documentNumber);
+    const validateDocumentNumber = this.validateDocumentNumber(
+      documentType.name,
+      documentNumber,
+    );
 
     if (!validateDocumentNumber) {
       const documentLength: Record<string, number> = {
@@ -83,7 +101,10 @@ export class ComplainsDomainService {
       throw new BadRequestException(errorMessage);
     }
 
-    console.log('before instance Complains - createComplainsDto - emailsCopied', createComplainsDto.emailsCopied);
+    console.log(
+      'before instance Complains - createComplainsDto - emailsCopied',
+      createComplainsDto.emailsCopied,
+    );
 
     const complains = new Complains();
 
@@ -95,10 +116,6 @@ export class ComplainsDomainService {
     complains.currency = currency.name;
     complains.type = type.detail;
 
-    // This is to save the data and then generate the code
-    // we also can do an trigger function inside the database
-    // to avoid this piece of code
-
     console.log('before saving - complains: ', complains);
 
     const complainsSaved = await this.complainsRepository.save(complains);
@@ -108,7 +125,8 @@ export class ComplainsDomainService {
 
     complainsSaved.code = complainsCode;
 
-    const complainsCreated = await this.complainsRepository.save(complainsSaved);
+    const complainsCreated =
+      await this.complainsRepository.save(complainsSaved);
 
     await Promise.all([
       this.notificationService.send({
@@ -120,7 +138,10 @@ export class ComplainsDomainService {
       }),
       this.notificationService.send({
         channel: NotificationChannelEnum.EMAIL,
-        recipient: process.env.NODE_ENV === 'PROD' ? 'melissapinday@melvanperu.com' : complainsCreated.complainerEmail,
+        recipient:
+          process.env.NODE_ENV === 'PROD'
+            ? 'melissapinday@melvanperu.com'
+            : complainsCreated.complainerEmail,
         subject: 'Melvan - Nuevo reclamo',
         templateId: NotificationEmailTemplateEnum.MELVAN_COMPLAIN,
         message: {
@@ -165,9 +186,10 @@ export class ComplainsDomainService {
     const { updatedBy: userUpdater } = updateComplainsDto;
     const whereUserCreator = { id: userUpdater };
 
-    const [updater] = await Promise.all([userUpdater && this.usersDomainService.findOne({ where: whereUserCreator })]);
+    const updater = await this.usersDomainService.findOne({
+      where: whereUserCreator,
+    });
 
-    //Valida si el usuario existe
     if (!updater) {
       const errorMessage = `No existe usuario con id: ${userUpdater}`;
       this.logger.debug(errorMessage);

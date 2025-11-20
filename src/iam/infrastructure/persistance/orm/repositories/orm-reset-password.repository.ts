@@ -27,7 +27,12 @@ export class OrmResetPasswordRepository implements ResetPasswordRepository {
     return this.resetPasswordRepository.create(resetPassword);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<ResetPassword>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<ResetPassword>> {
     const [tokens, total] = await this.resetPasswordRepository.findAndCount({
       where,
       relations,
@@ -40,8 +45,17 @@ export class OrmResetPasswordRepository implements ResetPasswordRepository {
     return this.pageableService.getPages({ data, total, start, limit });
   }
 
-  async findOne({ where, relations }: { where: object; relations: string[] }): Promise<ResetPassword> {
-    const entity = await this.resetPasswordRepository.findOne({ where, relations });
+  async findOne({
+    where,
+    relations,
+  }: {
+    where: object;
+    relations: string[];
+  }): Promise<ResetPassword> {
+    const entity = await this.resetPasswordRepository.findOne({
+      where,
+      relations,
+    });
 
     if (entity) {
       return ResetPasswordMapper.toDomain(entity);

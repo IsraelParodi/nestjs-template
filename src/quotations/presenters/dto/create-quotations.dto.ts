@@ -1,5 +1,14 @@
 import { IsShippingTypeValid } from '@quotations/infrastructure/decorators/shipping-type.decorator';
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min, IsNumberString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  IsNumberString,
+} from 'class-validator';
 
 export class CreateQuotationsDto {
   @IsString()

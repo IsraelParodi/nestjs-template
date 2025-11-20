@@ -28,6 +28,10 @@ import { NotificationsModule } from '@notifications/notifications.module';
       useClass: OrmComplainsRepository,
     },
   ],
-  exports: [ComplainsApplicationService, ComplainsDomainService, ComplainsRepository],
+  exports: [
+    ComplainsApplicationService,
+    ComplainsDomainService,
+    ComplainsRepository,
+  ],
 })
 export class ComplainsModule {}

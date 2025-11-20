@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, ParseIntPipe, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from '@iam/infrastructure/enum/auth-type.enum';
@@ -12,10 +22,15 @@ import { PaginationQueryContactUsDto } from '../dto/pagination-query-contact-us.
 @Auth(AuthType.None)
 @Controller('contact-us')
 export class ContactUsController {
-  constructor(private readonly contactUsApplicationService: ContactUsApplicationService) {}
+  constructor(
+    private readonly contactUsApplicationService: ContactUsApplicationService,
+  ) {}
 
   @Post()
-  create(@Body() createContactUsDto: CreateContactUsDto, @Req() request: Request) {
+  create(
+    @Body() createContactUsDto: CreateContactUsDto,
+    @Req() request: Request,
+  ) {
     createContactUsDto.createdBy = request.user?.sub;
     return this.contactUsApplicationService.create(createContactUsDto);
   }
@@ -23,8 +38,15 @@ export class ContactUsController {
   @Get()
   @Auth(AuthType.Bearer)
   @Roles(RoleEnum.Admin)
-  findAll(@Query() { start = 0, limit = 100, ...filters }: PaginationQueryContactUsDto) {
-    return this.contactUsApplicationService.findAll({ start, limit, ...filters });
+  findAll(
+    @Query()
+    { start = 0, limit = 100, ...filters }: PaginationQueryContactUsDto,
+  ) {
+    return this.contactUsApplicationService.findAll({
+      start,
+      limit,
+      ...filters,
+    });
   }
 
   @Get(':id')
@@ -47,6 +69,9 @@ export class ContactUsController {
   @Roles(RoleEnum.Admin)
   removeMany(@Body() deleteManyDto: DeleteManyDto, @Req() request: Request) {
     const deletedBy = request.user.sub;
-    return this.contactUsApplicationService.removeMany(deleteManyDto, deletedBy);
+    return this.contactUsApplicationService.removeMany(
+      deleteManyDto,
+      deletedBy,
+    );
   }
 }

@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, Max, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { IsNationalTaxpayerRegistryValid } from '@complains/infrastructure/decorators/complains-nation-taxpayer-registry.decorator';
 

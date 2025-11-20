@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Req,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from '@iam/infrastructure/enum/auth-type.enum';
@@ -22,7 +33,10 @@ export class ListOfValuesController {
   @Auth(AuthType.Bearer)
   @Roles(RoleEnum.Admin)
   @Post()
-  createLov(@Body() createListOfValuesDto: CreateListOfValuesDto, @Req() request: Request) {
+  createLov(
+    @Body() createListOfValuesDto: CreateListOfValuesDto,
+    @Req() request: Request,
+  ) {
     createListOfValuesDto.createdBy = request.user.sub;
     return this.listOfValuesApplicationService.create(createListOfValuesDto);
   }
@@ -50,7 +64,10 @@ export class ListOfValuesController {
     @Req() request: Request,
   ) {
     updateListOfValuesDto.updatedBy = request.user.sub;
-    return this.listOfValuesApplicationService.update(id, updateListOfValuesDto);
+    return this.listOfValuesApplicationService.update(
+      id,
+      updateListOfValuesDto,
+    );
   }
 
   @Auth(AuthType.Bearer)
@@ -67,7 +84,10 @@ export class ListOfValuesController {
     @Body() createListOfValuesDetailDto: CreateListOfValuesDetailDto,
   ) {
     createListOfValuesDetailDto.createdBy = request.user.sub;
-    return this.listOfValuesDetailApplicationService.create(createListOfValuesDetailDto, key);
+    return this.listOfValuesDetailApplicationService.create(
+      createListOfValuesDetailDto,
+      key,
+    );
   }
 
   @Auth(AuthType.Bearer)
@@ -78,7 +98,10 @@ export class ListOfValuesController {
     @Req() request: Request,
   ) {
     updateListOfValuesDetailDto.updatedBy = request.user.sub;
-    return this.listOfValuesDetailApplicationService.update(id, updateListOfValuesDetailDto);
+    return this.listOfValuesDetailApplicationService.update(
+      id,
+      updateListOfValuesDetailDto,
+    );
   }
 
   @Auth(AuthType.Bearer)

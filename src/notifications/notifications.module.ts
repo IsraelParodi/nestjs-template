@@ -11,7 +11,10 @@ import { EmailProvider } from './infrastructure/providers/email/email.provider';
 import { SmsProvider } from './infrastructure/providers/sms/sms.provider';
 
 @Module({
-  imports: [ConfigModule.forFeature(sengridConfig), ConfigModule.forFeature(twilioConfig)],
+  imports: [
+    ConfigModule.forFeature(sengridConfig),
+    ConfigModule.forFeature(twilioConfig),
+  ],
   providers: [
     NotificationsApplicationService,
     NotificationsDomainService,

@@ -30,7 +30,6 @@ export class UsersDomainService {
 
   async create(createUserDto: Partial<CreateUserDto>) {
     try {
-      // Valida la existencia del rol
       const [roleFound, creator, country] = await Promise.all([
         createUserDto.role && this.roleService.findOne(createUserDto.role),
         createUserDto.createdBy &&
@@ -130,7 +129,8 @@ export class UsersDomainService {
       user.password = await this.hashingService.hash(updateUserDto.password);
     }
 
-    const shouldSendAccessChangeEmail = updateUserDto.email || updateUserDto.password;
+    const shouldSendAccessChangeEmail =
+      updateUserDto.email || updateUserDto.password;
 
     if (shouldSendAccessChangeEmail) {
       const paramsNotificationEmailSend: SendNotificationType = {

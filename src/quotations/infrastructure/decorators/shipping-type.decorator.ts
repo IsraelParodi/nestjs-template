@@ -1,23 +1,27 @@
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+import {
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
 
 @ValidatorConstraint({ async: false })
-export class IsShippingTypeValidConstraint implements ValidatorConstraintInterface {
+export class IsShippingTypeValidConstraint
+  implements ValidatorConstraintInterface
+{
   validate(value: any, args: ValidationArguments): boolean {
     const obj = args.object as any;
     const isMaritime = obj.transportType === 'Transporte marítimo';
 
     if (!isMaritime) {
-      // Si no es marítimo, shippingType no debe existir
       return value === undefined || value === null;
     }
 
-    // Si es marítimo, shippingType es obligatorio y debe ser string válido
     if (!value || typeof value !== 'string' || value.trim().length === 0) {
       return false;
     }
 
     if (value === 'FCL') {
-      // containerCode requerido, cargoVolume prohibido
       return (
         typeof obj.containerCode === 'string' &&
         obj.containerCode.trim().length > 0 &&
@@ -26,15 +30,14 @@ export class IsShippingTypeValidConstraint implements ValidatorConstraintInterfa
     }
 
     if (value === 'LCL') {
-      // cargoVolume requerido (número), containerCode prohibido
       return (
         typeof obj.cargoVolume === 'number' &&
-        !isNaN(obj.cargoVolume) &&
+        !Number.isNaN(obj.cargoVolume) &&
         (obj.containerCode === undefined || obj.containerCode === null)
       );
     }
 
-    return true; // otros casos
+    return true;
   }
 
   defaultMessage(args: ValidationArguments): string {
@@ -59,7 +62,10 @@ export class IsShippingTypeValidConstraint implements ValidatorConstraintInterfa
     }
 
     if (args.value === 'LCL') {
-      if (typeof obj.cargoVolume !== 'number' || isNaN(obj.cargoVolume)) {
+      if (
+        typeof obj.cargoVolume !== 'number' ||
+        Number.isNaN(obj.cargoVolume)
+      ) {
         return `'cargoVolume' (as a number) is required when shippingType is LCL`;
       }
       if (obj.containerCode !== undefined && obj.containerCode !== null) {

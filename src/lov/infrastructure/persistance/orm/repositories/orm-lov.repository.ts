@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 
 import { ListOfValues } from '@lov/domain/lov';
 import { ListOfValuesRepository } from '@lov/domain/repositories/lov.repository';
@@ -28,7 +32,10 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
   async update(listOfValues: ListOfValues): Promise<ListOfValues> {
     const persistenceModel = ListOfValuesMapper.toPersistence(listOfValues);
 
-    await this.listOfValues.update({ id: persistenceModel.id }, persistenceModel);
+    await this.listOfValues.update(
+      { id: persistenceModel.id },
+      persistenceModel,
+    );
 
     return ListOfValuesMapper.toDomain(persistenceModel);
   }
@@ -37,7 +44,11 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     return this.listOfValues.save(listOfValues);
   }
 
-  async findOne({ where, relations, select }: IFindOne<ListOfValues>): Promise<ListOfValues> {
+  async findOne({
+    where,
+    relations,
+    select,
+  }: IFindOne<ListOfValues>): Promise<ListOfValues> {
     const wherePartial: Partial<ListOfValues> = where;
 
     const entity = await this.listOfValues.findOne({
@@ -53,7 +64,12 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     return ListOfValuesMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<ListOfValues>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<ListOfValues>> {
     const [listOfValues, total] = await this.listOfValues.findAndCount({
       where,
       relations,
@@ -61,7 +77,9 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
       take: limit,
     });
 
-    const data = listOfValues.map((listOfValues) => ListOfValuesMapper.toDomain(listOfValues));
+    const data = listOfValues.map((listOfValues) =>
+      ListOfValuesMapper.toDomain(listOfValues),
+    );
 
     return this.pageableService.getPages({ data, total, start, limit });
   }

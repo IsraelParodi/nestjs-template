@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { ComplainsMapper } from '../mappers/complains.mapper';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 import { ComplainsEntity } from '../entities/complains.entity';
 import { Complains } from '@complains/domain/complains';
 import { ComplainsRepository } from '@complains/domain/repositories/complains.repository';
@@ -26,7 +30,10 @@ export class OrmComplainsRepository implements ComplainsRepository {
   async update(complains: Complains): Promise<Complains> {
     const persistenceModel = ComplainsMapper.toPersistence(complains);
 
-    await this.complainsRepository.update({ id: persistenceModel.id }, persistenceModel);
+    await this.complainsRepository.update(
+      { id: persistenceModel.id },
+      persistenceModel,
+    );
 
     return ComplainsMapper.toDomain(persistenceModel);
   }
@@ -35,8 +42,15 @@ export class OrmComplainsRepository implements ComplainsRepository {
     return this.complainsRepository.save(complains);
   }
 
-  async findOne({ where, relations, select }: IFindOne<Complains>): Promise<Complains> {
-    const wherePartial: Omit<Partial<Complains>, 'emailsCopied' | 'amountComplained'> = where;
+  async findOne({
+    where,
+    relations,
+    select,
+  }: IFindOne<Complains>): Promise<Complains> {
+    const wherePartial: Omit<
+      Partial<Complains>,
+      'emailsCopied' | 'amountComplained'
+    > = where;
 
     const entity = await this.complainsRepository.findOne({
       where: wherePartial,
@@ -52,7 +66,12 @@ export class OrmComplainsRepository implements ComplainsRepository {
     return ComplainsMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<Complains>> {
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<Complains>> {
     const [complains, total] = await this.complainsRepository.findAndCount({
       where,
       relations,
@@ -60,7 +79,9 @@ export class OrmComplainsRepository implements ComplainsRepository {
       take: limit,
     });
 
-    const data = complains.map((complains) => ComplainsMapper.toDomain(complains));
+    const data = complains.map((complains) =>
+      ComplainsMapper.toDomain(complains),
+    );
 
     return this.pageableService.getPages({ data, total, start, limit });
   }

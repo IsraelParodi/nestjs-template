@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
 import { AuthType } from '@iam/infrastructure/enum/auth-type.enum';
@@ -11,7 +22,9 @@ import { UpdateComplainsDto } from '../dto/update-complains.dto';
 
 @Controller('complains')
 export class ComplainsController {
-  constructor(private readonly complainsApplicationService: ComplainsApplicationService) {}
+  constructor(
+    private readonly complainsApplicationService: ComplainsApplicationService,
+  ) {}
 
   @Auth(AuthType.None)
   @Post()

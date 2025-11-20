@@ -1,5 +1,7 @@
 import { Role } from '@users/domain/role';
 import { RoleEntity } from '../entities/role.entity';
+import { Permission } from '@users/domain/permission';
+import { PermissionEntity } from '../entities/permission.entity';
 
 export class RoleMapper {
   static toDomain(roleEntity: RoleEntity): Role {
@@ -18,8 +20,26 @@ export class RoleMapper {
     entity.id = role.id;
     entity.name = role.name;
     entity.description = role.description;
-    // entity.permissions = role.permissions;
+    entity.permissions = this.mapPermissionsReferenceToPersistence(
+      role.permissions,
+    );
 
     return entity;
+  }
+
+  static mapPermissionsReferenceToPersistence(
+    permissions?: Permission[],
+  ): PermissionEntity[] {
+    if (permissions.length === 0) return null;
+    const permissionsList: PermissionEntity[] = [];
+
+    permissions.forEach((permission) => {
+      const permissionEntity = new PermissionEntity();
+      permissionEntity.id = permission.id;
+      permissionEntity.name = permission.name;
+      permissionsList.push(permissionEntity);
+    });
+
+    return permissionsList;
   }
 }

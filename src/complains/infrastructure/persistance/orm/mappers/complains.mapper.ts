@@ -16,7 +16,8 @@ export class ComplainsMapper {
 
     complains.code = complainsEntity.code;
     complains.status = complainsEntity.status;
-    complains.nationalTaxpayerRegistry = complainsEntity.nationalTaxpayerRegistry;
+    complains.nationalTaxpayerRegistry =
+      complainsEntity.nationalTaxpayerRegistry;
     complains.companyName = complainsEntity.companyName;
     complains.documentType = complainsEntity.documentType;
     complains.documentNumber = complainsEntity.documentNumber;
@@ -26,8 +27,12 @@ export class ComplainsMapper {
     complains.complainerPhone = complainsEntity.complainerPhone;
     complains.complainerPhoneCode = complainsEntity.complainerPhoneCode;
     complains.complainerEmail = complainsEntity.complainerEmail;
-    complains.complainerState = this.mapStateReferenceToDomain(complainsEntity.complainerState);
-    complains.complainerCountry = this.mapCountryReferenceToDomain(complainsEntity.complainerCountry);
+    complains.complainerState = this.mapStateReferenceToDomain(
+      complainsEntity.complainerState,
+    );
+    complains.complainerCountry = this.mapCountryReferenceToDomain(
+      complainsEntity.complainerCountry,
+    );
     complains.serviceType = complainsEntity.serviceType;
     complains.currency = complainsEntity.currency;
     complains.amountComplained = complainsEntity.amountComplained;
@@ -36,7 +41,9 @@ export class ComplainsMapper {
     complains.detail = complainsEntity.detail;
     complains.request = complainsEntity.request;
     complains.emailsCopied = complainsEntity.emailsCopied;
-    complains.updatedBy = this.mapUserReferenceToDomain(complainsEntity.updatedBy);
+    complains.updatedBy = this.mapUserReferenceToDomain(
+      complainsEntity.updatedBy,
+    );
     complains.createdAt = complainsEntity.createdAt;
     complains.updatedAt = complainsEntity.updatedAt;
 
@@ -58,8 +65,12 @@ export class ComplainsMapper {
     entity.complainerPhone = complains.complainerPhone;
     entity.complainerPhoneCode = complains.complainerPhoneCode;
     entity.complainerEmail = complains.complainerEmail;
-    entity.complainerState = this.mapStateReferenceToPersistence(complains.complainerState);
-    entity.complainerCountry = this.mapCountryReferenceToPersistence(complains.complainerCountry);
+    entity.complainerState = this.mapStateReferenceToPersistence(
+      complains.complainerState,
+    );
+    entity.complainerCountry = this.mapCountryReferenceToPersistence(
+      complains.complainerCountry,
+    );
     entity.serviceType = complains.serviceType;
     entity.currency = complains.currency;
     entity.amountComplained = complains.amountComplained;
@@ -83,11 +94,15 @@ export class ComplainsMapper {
     return UserMapper.mapUserReferenceToPersistence(user);
   }
 
-  private static mapCountryReferenceToDomain(countryEntity?: CountryEntity): Country {
+  private static mapCountryReferenceToDomain(
+    countryEntity?: CountryEntity,
+  ): Country {
     return CountryMapper.toDomain(countryEntity);
   }
 
-  private static mapCountryReferenceToPersistence(country?: Country): CountryEntity {
+  private static mapCountryReferenceToPersistence(
+    country?: Country,
+  ): CountryEntity {
     return CountryMapper.toPersistence(country);
   }
 

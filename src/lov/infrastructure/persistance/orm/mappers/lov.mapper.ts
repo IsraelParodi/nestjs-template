@@ -18,11 +18,17 @@ export class ListOfValuesMapper {
     const valuesHasData = listOfValuesEntity.values?.length != 0;
 
     if (valuesIsArray && valuesHasData) {
-      listOfValues.values = this.mapListOfValuesDetailReferenceToDomain(listOfValuesEntity.values);
+      listOfValues.values = this.mapListOfValuesDetailReferenceToDomain(
+        listOfValuesEntity.values,
+      );
     }
 
-    listOfValues.createdBy = this.mapUserReferenceToDomain(listOfValuesEntity.createdBy);
-    listOfValues.updatedBy = this.mapUserReferenceToDomain(listOfValuesEntity.updatedBy);
+    listOfValues.createdBy = this.mapUserReferenceToDomain(
+      listOfValuesEntity.createdBy,
+    );
+    listOfValues.updatedBy = this.mapUserReferenceToDomain(
+      listOfValuesEntity.updatedBy,
+    );
     listOfValues.createdAt = listOfValuesEntity.createdAt;
     listOfValues.updatedAt = listOfValuesEntity.updatedAt;
 
@@ -35,16 +41,24 @@ export class ListOfValuesMapper {
     entity.key = listOfValues.key;
     entity.description = listOfValues.description;
 
-    entity.createdBy = this.mapUserReferenceToPersistence(listOfValues.createdBy);
-    entity.updatedBy = this.mapUserReferenceToPersistence(listOfValues.updatedBy);
+    entity.createdBy = this.mapUserReferenceToPersistence(
+      listOfValues.createdBy,
+    );
+    entity.updatedBy = this.mapUserReferenceToPersistence(
+      listOfValues.updatedBy,
+    );
     entity.createdAt = listOfValues.createdAt;
     entity.updatedAt = listOfValues.updatedAt;
 
     return entity;
   }
 
-  private static mapListOfValuesDetailReferenceToDomain(listOfValuesDetailEntity: ListOfValuesDetailEntity[]) {
-    return listOfValuesDetailEntity.map((value) => ListOfValuesDetailMapper.toDomainEmbeded(value));
+  private static mapListOfValuesDetailReferenceToDomain(
+    listOfValuesDetailEntity: ListOfValuesDetailEntity[],
+  ) {
+    return listOfValuesDetailEntity.map((value) =>
+      ListOfValuesDetailMapper.toDomainEmbeded(value),
+    );
   }
 
   private static mapUserReferenceToDomain(userEntity?: UserEntity): User {

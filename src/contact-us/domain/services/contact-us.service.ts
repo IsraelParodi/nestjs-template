@@ -23,7 +23,10 @@ export class ContactUsDomainService {
   ) {}
 
   async create(contactUs: ContactUs) {
-    const { executor, countryFound } = await this.contactUsValidations(contactUs, true);
+    const { executor, countryFound } = await this.contactUsValidations(
+      contactUs,
+      true,
+    );
     this.logger.debug(`Creator found: ${JSON.stringify(executor)}`);
 
     contactUs.country = countryFound;
@@ -42,11 +45,21 @@ export class ContactUsDomainService {
       }),
       this.notificationsApplicationService.send({
         channel: NotificationChannelEnum.EMAIL,
-        recipient: process.env.NODE_ENV === 'PROD' ? 'melissapinday@melvanperu.com' : email,
+        recipient:
+          process.env.NODE_ENV === 'PROD'
+            ? 'melissapinday@melvanperu.com'
+            : email,
         subject: 'Melvan - Solicitud de contacto',
         templateId: NotificationEmailTemplateEnum.MELVAN_CONTACT_US,
         message: {
-          body: { name, lastname, country: country.name, phone, email, message },
+          body: {
+            name,
+            lastname,
+            country: country.name,
+            phone,
+            email,
+            message,
+          },
         },
       }),
     ]);
@@ -86,7 +99,8 @@ export class ContactUsDomainService {
     const whereCondition = isCreate ? createdBy.id : updatedBy;
     const whereUserExecutor = { id: whereCondition };
     const [executor, countryFound] = await Promise.all([
-      whereCondition && this.usersDomainService.findOne({ where: whereUserExecutor }),
+      whereCondition &&
+        this.usersDomainService.findOne({ where: whereUserExecutor }),
       country &&
         this.countriesDomainService.findOne({
           where: { id: country.id },

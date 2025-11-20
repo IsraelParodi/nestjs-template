@@ -22,19 +22,22 @@ export class ListOfValuesDetailDomainService {
     private readonly usersDomainService: UsersDomainService,
   ) {}
 
-  async create(createListOfValuesDto: CreateListOfValuesDetailDto, lovKey: string) {
+  async create(
+    createListOfValuesDto: CreateListOfValuesDetailDto,
+    lovKey: string,
+  ) {
     const { createdBy: userCreator } = createListOfValuesDto;
     const whereUserCreator = { id: userCreator };
 
     const [creator, listOfValuesKey] = await Promise.all([
-      userCreator && this.usersDomainService.findOne({ where: whereUserCreator }),
+      userCreator &&
+        this.usersDomainService.findOne({ where: whereUserCreator }),
       lovKey &&
         this.listOfValuesDomainService.findOne({
           where: { key: lovKey },
         }),
     ]);
 
-    //Valida si el usuario existe
     if (userCreator && !creator) {
       const errorMessage = `No existe admin con id: ${userCreator}`;
       this.logger.debug(errorMessage);
@@ -50,7 +53,8 @@ export class ListOfValuesDetailDomainService {
     listOfValuesDetail.detail = createListOfValuesDto.detail;
     listOfValuesDetail.createdBy = creator;
 
-    const listOfValuesCreated = await this.listOfValuesDetailRepository.create(listOfValuesDetail);
+    const listOfValuesCreated =
+      await this.listOfValuesDetailRepository.create(listOfValuesDetail);
 
     return this.findOne({ where: { id: listOfValuesCreated.id } });
   }
@@ -76,9 +80,10 @@ export class ListOfValuesDetailDomainService {
     const { updatedBy: userUpdater } = updateListOfValuesDto;
     const whereUserCreator = { id: userUpdater };
 
-    const [updater] = await Promise.all([userUpdater && this.usersDomainService.findOne({ where: whereUserCreator })]);
+    const updater = await this.usersDomainService.findOne({
+      where: whereUserCreator,
+    });
 
-    //Valida si el usuario existe
     if (userUpdater && !updater) {
       const errorMessage = `No existe usuario con id: ${userUpdater}`;
       this.logger.debug(errorMessage);

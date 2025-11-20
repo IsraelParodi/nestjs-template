@@ -1,7 +1,14 @@
-import { Validate, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments } from 'class-validator';
+import {
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+} from 'class-validator';
 
 @ValidatorConstraint({ async: false })
-export class IsShippingTypeValidConstraint implements ValidatorConstraintInterface {
+export class IsShippingTypeValidConstraint
+  implements ValidatorConstraintInterface
+{
   validate(value: any, args: ValidationArguments): boolean {
     const obj = args.object as any;
     const isMaritime = obj.transportType === 'Transporte marítimo';

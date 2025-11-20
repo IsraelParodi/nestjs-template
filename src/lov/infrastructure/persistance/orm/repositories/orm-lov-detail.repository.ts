@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { IFind, IFindOne, PaginatedResult } from '@common/interfaces/commons.interface';
+import {
+  IFind,
+  IFindOne,
+  PaginatedResult,
+} from '@common/interfaces/commons.interface';
 
 import { ListOfValuesDetail } from '@lov/domain/lov-detail';
 import { ListOfValuesDetailRepository } from '@lov/domain/repositories/lov-detail.repository';
@@ -11,33 +15,50 @@ import { ListOfValuesDetailMapper } from '../mappers/lov-detail.mapper';
 import { PageableService } from '@common/services/pageable.service';
 
 @Injectable()
-export class OrmListOfValuesDetailRepository implements ListOfValuesDetailRepository {
+export class OrmListOfValuesDetailRepository
+  implements ListOfValuesDetailRepository
+{
   constructor(
     @InjectRepository(ListOfValuesDetailEntity)
     private readonly listOfValuesDetail: Repository<ListOfValuesDetailEntity>,
     private readonly pageableService: PageableService,
   ) {}
 
-  async save(listOfValuesDetail: ListOfValuesDetail): Promise<ListOfValuesDetail> {
-    const persistenceModel = ListOfValuesDetailMapper.toPersistence(listOfValuesDetail);
+  async save(
+    listOfValuesDetail: ListOfValuesDetail,
+  ): Promise<ListOfValuesDetail> {
+    const persistenceModel =
+      ListOfValuesDetailMapper.toPersistence(listOfValuesDetail);
     const newEntity = await this.listOfValuesDetail.save(persistenceModel);
 
     return ListOfValuesDetailMapper.toDomain(newEntity);
   }
 
-  async update(listOfValuesDetail: ListOfValuesDetail): Promise<ListOfValuesDetail> {
-    const persistenceModel = ListOfValuesDetailMapper.toPersistence(listOfValuesDetail);
+  async update(
+    listOfValuesDetail: ListOfValuesDetail,
+  ): Promise<ListOfValuesDetail> {
+    const persistenceModel =
+      ListOfValuesDetailMapper.toPersistence(listOfValuesDetail);
 
-    await this.listOfValuesDetail.update({ id: persistenceModel.id }, persistenceModel);
+    await this.listOfValuesDetail.update(
+      { id: persistenceModel.id },
+      persistenceModel,
+    );
 
     return ListOfValuesDetailMapper.toDomain(persistenceModel);
   }
 
-  async create(listOfValuesDetail: ListOfValuesDetail): Promise<ListOfValuesDetail> {
+  async create(
+    listOfValuesDetail: ListOfValuesDetail,
+  ): Promise<ListOfValuesDetail> {
     return this.listOfValuesDetail.save(listOfValuesDetail);
   }
 
-  async findOne({ where, relations, select }: IFindOne<ListOfValuesDetail>): Promise<ListOfValuesDetail> {
+  async findOne({
+    where,
+    relations,
+    select,
+  }: IFindOne<ListOfValuesDetail>): Promise<ListOfValuesDetail> {
     const whereSpread: Partial<ListOfValuesDetail> = where;
 
     const entity = await this.listOfValuesDetail.findOne({
@@ -48,21 +69,31 @@ export class OrmListOfValuesDetailRepository implements ListOfValuesDetailReposi
     });
 
     if (!entity) {
-      throw new NotFoundException(`ListOfValuesDetail with ID ${where.id} not found`);
+      throw new NotFoundException(
+        `ListOfValuesDetail with ID ${where.id} not found`,
+      );
     }
 
     return ListOfValuesDetailMapper.toDomain(entity);
   }
 
-  async find({ where, relations, start, limit }: IFind): Promise<PaginatedResult<ListOfValuesDetail>> {
-    const [listOfValuesDetail, total] = await this.listOfValuesDetail.findAndCount({
-      where,
-      relations,
-      skip: start,
-      take: limit,
-    });
+  async find({
+    where,
+    relations,
+    start,
+    limit,
+  }: IFind): Promise<PaginatedResult<ListOfValuesDetail>> {
+    const [listOfValuesDetail, total] =
+      await this.listOfValuesDetail.findAndCount({
+        where,
+        relations,
+        skip: start,
+        take: limit,
+      });
 
-    const data = listOfValuesDetail.map((listOfValuesDetail) => ListOfValuesDetailMapper.toDomain(listOfValuesDetail));
+    const data = listOfValuesDetail.map((listOfValuesDetail) =>
+      ListOfValuesDetailMapper.toDomain(listOfValuesDetail),
+    );
 
     return this.pageableService.getPages({ data, total, start, limit });
   }
