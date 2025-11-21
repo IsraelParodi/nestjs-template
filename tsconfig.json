@@ -30,5 +30,9 @@
       "@trackings/*": ["./src/trackings/*"],
       "@contact-us/*": ["./src/contact-us/*"],
     }
+  },
+   "watchOptions": {
+    "watchFile": "fixedPollingInterval",
+    "watchDirectory": "fixedPollingInterval"
   }
 }

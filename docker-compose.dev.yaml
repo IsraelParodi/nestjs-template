@@ -4,10 +4,8 @@ services:
     restart: always
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=db_owner
-      - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=db_dev
+    env_file:
+      - .env.development
     volumes:
       - data:/var/lib/postgresql
   testdb:
@@ -15,31 +13,25 @@ services:
     restart: always
     ports:
       - "5433:5432"
-    environment:
-      - POSTGRES_USER=db_owner
-      - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=db_testing
+    env_file:
+      - .env.test
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
       target: dev
+    env_file:
+      - .env.development
     depends_on:
       - db
-    environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: db_owner
-      DATABASE_PASSWORD: 123456
-      DATABASE_NAME: db_dev
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./src:/usr/src/app/src
+      - ./test:/usr/src/app/test
+      - ./migrations:/usr/src/app/migrations
+      - ./.env.development:/usr/src/app/.env.development
     ports:
       - "3000:3000"
-    command: >
-      sh -c "npm run migration:run && npm run start:dev"
 
 volumes:
   data:

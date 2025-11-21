@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "docker compose -f docker-compose.dev.yaml up -d testdb && npm run migration:run",
+    "pretest:e2e": "docker compose -f docker-compose.dev.yaml up -d testdb && npm run migration:run:test",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "posttest:e2e": "docker compose -f docker-compose.dev.yaml stop testdb && docker compose -f docker-compose.dev.yaml rm -f testdb",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
@@ -25,6 +25,8 @@
     "migration:generate": "npm run build && cross-var npm run typeorm:config -- migration:generate ./migrations/$npm_config_name",
     "migration:create": "cross-var npm run typeorm -- migration:create ./migrations/$npm_config_name",
     "migration:run": "npm run build && npm run typeorm:config -- migration:run",
+    "migration:run:test": "cross-env NODE_ENV=test npm run typeorm:config -- migration:run",
+    "migration:run:prod": "npm run typeorm:config -- migration:run",
     "migration:revert": "npm run build && npm run typeorm:config -- migration:revert"
   },
   "dependencies": {
@@ -60,6 +62,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
+    "cross-env": "^10.1.0",
     "cross-var": "^1.1.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",

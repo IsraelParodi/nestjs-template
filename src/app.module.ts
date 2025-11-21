@@ -22,7 +22,12 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
         DATABASE_HOST: Joi.required(),
         DATABASE_PORT: Joi.number().default(5432),
       }),
-      envFilePath: '.env',
+      envFilePath:
+        process.env.NODE_ENV === 'test'
+          ? '.env.test'
+          : process.env.NODE_ENV === 'production'
+            ? '.env.production'
+            : '.env.development',
     }),
     ThrottlerModule.forRoot([
       {
@@ -35,26 +40,11 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
       useFactory: () => {
         return {
           type: 'postgres',
-          host:
-            process.env.NODE_ENV === 'test'
-              ? process.env.DATABASE_HOST_TEST
-              : process.env.DATABASE_HOST,
-          port:
-            process.env.NODE_ENV === 'test'
-              ? +process.env.DATABASE_PORT_TEST
-              : +process.env.DATABASE_PORT,
-          username:
-            process.env.NODE_ENV === 'test'
-              ? process.env.DATABASE_USER_TEST
-              : process.env.DATABASE_USER,
-          password:
-            process.env.NODE_ENV === 'test'
-              ? process.env.DATABASE_PASSWORD_TEST
-              : process.env.DATABASE_PASSWORD,
-          database:
-            process.env.NODE_ENV === 'test'
-              ? process.env.DATABASE_NAME_TEST
-              : process.env.DATABASE_NAME,
+          host: process.env.DATABASE_HOST,
+          port: +process.env.DATABASE_PORT,
+          username: process.env.DATABASE_USER,
+          password: process.env.DATABASE_PASSWORD,
+          database: process.env.DATABASE_NAME,
           autoLoadEntities: true,
           synchronize: false,
           logging: true,
