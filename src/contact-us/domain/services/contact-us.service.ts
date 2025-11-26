@@ -46,7 +46,7 @@ export class ContactUsDomainService {
       this.notificationsApplicationService.send({
         channel: NotificationChannelEnum.EMAIL,
         recipient:
-          process.env.NODE_ENV === 'PROD'
+          process.env.APP_ENV === 'PROD'
             ? 'melissapinday@melvanperu.com'
             : email,
         subject: 'Melvan - Solicitud de contacto',

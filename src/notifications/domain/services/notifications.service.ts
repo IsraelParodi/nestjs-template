@@ -14,7 +14,10 @@ export class NotificationsDomainService {
   ) {}
 
   async send(params: SendNotificationType) {
-    if (params.channel == NotificationChannelEnum.EMAIL) {
+    if (
+      params.channel == NotificationChannelEnum.EMAIL &&
+      ['PROD'].includes(process.env.APP_ENV)
+    ) {
       await this.emailProvider.send(params);
     }
 

@@ -101,11 +101,6 @@ export class ComplainsDomainService {
       throw new BadRequestException(errorMessage);
     }
 
-    console.log(
-      'before instance Complains - createComplainsDto - emailsCopied',
-      createComplainsDto.emailsCopied,
-    );
-
     const complains = new Complains();
 
     Object.assign(complains, createComplainsDto);
@@ -115,8 +110,6 @@ export class ComplainsDomainService {
     complains.serviceType = serviceType.name;
     complains.currency = currency.name;
     complains.type = type.detail;
-
-    console.log('before saving - complains: ', complains);
 
     const complainsSaved = await this.complainsRepository.save(complains);
 
@@ -139,7 +132,7 @@ export class ComplainsDomainService {
       this.notificationService.send({
         channel: NotificationChannelEnum.EMAIL,
         recipient:
-          process.env.NODE_ENV === 'PROD'
+          process.env.APP_ENV === 'PROD'
             ? 'melissapinday@melvanperu.com'
             : complainsCreated.complainerEmail,
         subject: 'Melvan - Nuevo reclamo',

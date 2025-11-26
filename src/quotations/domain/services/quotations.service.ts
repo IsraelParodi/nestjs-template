@@ -39,8 +39,6 @@ export class QuotationsDomainService {
     Object.assign(quotations, createQuotationsDto);
     quotations.country = countryFound;
 
-    console.log('before saving - quotations: ', quotations);
-
     const quotationsSaved = await this.quotationsRepository.save(
       quotations,
       manager,

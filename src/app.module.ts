@@ -23,9 +23,9 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
         DATABASE_PORT: Joi.number().default(5432),
       }),
       envFilePath:
-        process.env.NODE_ENV === 'test'
+        process.env.APP_ENV === 'TEST'
           ? '.env.test'
-          : process.env.NODE_ENV === 'production'
+          : process.env.APP_ENV === 'production'
             ? '.env.production'
             : '.env.development',
     }),
@@ -48,7 +48,7 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
           autoLoadEntities: true,
           synchronize: false,
           logging: true,
-          ssl: ['PROD', 'STAGING'].includes(process.env.NODE_ENV || '')
+          ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV || '')
             ? { ca: process.env.CA_CERT }
             : false,
         };

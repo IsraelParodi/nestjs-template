@@ -159,7 +159,7 @@ export class AuthenticationDomainService {
       where: { email },
     });
     const token = crypto.randomBytes(32).toString('hex');
-    const resetLink = `${BO_URL()[process.env.NODE_ENV]}/auth/reset-password?token=${token}`;
+    const resetLink = `${BO_URL()[process.env.APP_ENV]}/auth/reset-password?token=${token}`;
 
     if (tokenFound) {
       tokenFound.token = token;
@@ -167,8 +167,6 @@ export class AuthenticationDomainService {
     } else {
       await this.resetPasswordRepository.save({ email, token });
     }
-
-    console.log(`Send this link to the user: ${resetLink}`);
 
     const paramsNotificationEmailSend: SendNotificationType = {
       channel: NotificationChannelEnum.EMAIL,
@@ -179,6 +177,9 @@ export class AuthenticationDomainService {
     };
 
     await this.notificationService.send(paramsNotificationEmailSend);
+    if (['DEV', 'TEST'].includes(process.env.APP_ENV)) {
+      return { token };
+    }
   }
 
   async resetPassword(token: string, newPassword: string) {

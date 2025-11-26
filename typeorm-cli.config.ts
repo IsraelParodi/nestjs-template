@@ -1,13 +1,13 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
-const nodeEnv = process.env.NODE_ENV ?? 'development';
+const appEnv = process.env.APP_ENV ?? 'DEV';
 
 dotenv.config({
   path:
-    nodeEnv === 'test'
+    appEnv === 'TEST'
       ? '.env.test'
-      : nodeEnv === 'production'
+      : appEnv === 'production'
         ? '.env.production'
         : '.env.development',
 });
@@ -21,7 +21,7 @@ export default new DataSource({
   database: process.env.DATABASE_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
-  ssl: ['PROD', 'STAGING'].includes(process.env.NODE_ENV || '')
+  ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV || '')
     ? { ca: process.env.CA_CERT }
     : false,
 });

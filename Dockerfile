@@ -1,5 +1,7 @@
 # Base stage
 FROM node:lts-alpine3.22 AS base
+RUN apk add --no-cache ca-certificates curl openssl && update-ca-certificates
+
 WORKDIR /usr/src/app
 
 # Fix ownership of base folder only
@@ -11,9 +13,7 @@ RUN npm ci --ignore-scripts --prefer-offline
 # Dev stage
 FROM base AS dev
 
-ENV NODE_ENV=development
-
-COPY --chown=node:node app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json ./
+COPY --chown=node:node app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json .env.development ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node test ./test
 COPY --chown=node:node migrations ./migrations 
@@ -24,8 +24,6 @@ CMD ["npm", "run", "start:dev"]
 # Prod stage
 FROM base AS prod
 WORKDIR /usr/src/app
-
-ENV NODE_ENV=production
 
 COPY --chown=node:node app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json ./
 COPY --chown=node:node src ./src

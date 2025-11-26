@@ -33,7 +33,7 @@ export class UsersApplicationService {
       this.notificationsApplicationService.send({
         channel: NotificationChannelEnum.EMAIL,
         recipient:
-          process.env.NODE_ENV === 'PROD'
+          process.env.APP_ENV === 'PROD'
             ? 'melissapinday@melvanperu.com'
             : user.email,
         subject: 'Melvan - Nuevo usuario registrado',

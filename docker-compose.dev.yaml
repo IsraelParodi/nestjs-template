@@ -15,6 +15,7 @@ services:
       - "5433:5432"
     env_file:
       - .env.test
+    profiles: ["TEST"]
 
   api:
     build:
@@ -29,7 +30,6 @@ services:
       - ./src:/usr/src/app/src
       - ./test:/usr/src/app/test
       - ./migrations:/usr/src/app/migrations
-      - ./.env.development:/usr/src/app/.env.development
     ports:
       - "3000:3000"
 
