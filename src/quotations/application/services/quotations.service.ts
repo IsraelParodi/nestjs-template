@@ -13,7 +13,7 @@ export class QuotationsApplicationService {
   constructor(
     private readonly quotationsDomainService: QuotationsDomainService,
     private readonly unitOfWork: UnitOfWork,
-  ) {}
+  ) { }
 
   async create(createQuotationsDto: CreateQuotationsDto) {
     return this.unitOfWork.execute(async (manager) => {
@@ -22,6 +22,12 @@ export class QuotationsApplicationService {
         manager,
       );
     });
+  }
+
+  async createWithoutTransaction(createQuotationsDto: CreateQuotationsDto) {
+    return await this.quotationsDomainService.create(
+      createQuotationsDto
+    );
   }
 
   findAll(paginationQueryDto: PaginationQueryQuotationsDto) {

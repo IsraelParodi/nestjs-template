@@ -1,35 +1,63 @@
-# Base stage
+# -------------------------
+# Base Stage
+# -------------------------
 FROM node:lts-alpine3.22 AS base
 RUN apk add --no-cache ca-certificates curl openssl && update-ca-certificates
-
 WORKDIR /usr/src/app
 
-# Fix ownership of base folder only
 RUN mkdir -p /usr/src/app && chown node:node /usr/src/app
 
-COPY --chown=node:node package*.json ./
+# -------------------------
+# Builder Stage
+# -------------------------
+FROM base AS builder
+
+
+# Install dependencies
+COPY package*.json ./
 RUN npm ci --ignore-scripts --prefer-offline
 
-# Dev stage
+# Copy source code for build
+COPY app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json ./
+COPY src ./src
+COPY migrations ./migrations
+
+# Build the app
+RUN npm run build
+
+# -------------------------
+# Development Stage
+# -------------------------
 FROM base AS dev
 
-COPY --chown=node:node app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json .env.development ./
-COPY --chown=node:node src ./src
-COPY --chown=node:node test ./test
-COPY --chown=node:node migrations ./migrations 
+# Install dev dependencies
+COPY package*.json ./
+RUN npm ci --ignore-scripts --prefer-offline
+
+# Copy source code for development
+COPY app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json .env.development ./
+COPY src ./src
+COPY test ./test
+COPY migrations ./migrations
 
 USER node
+EXPOSE 3000
 CMD ["npm", "run", "start:dev"]
 
-# Prod stage
+# -------------------------
+# Production Stage
+# -------------------------
 FROM base AS prod
+
 WORKDIR /usr/src/app
 
-COPY --chown=node:node app.config.ts typeorm-cli.config.ts nest-cli.json tsconfig*.json ./
-COPY --chown=node:node src ./src
-COPY --chown=node:node migrations ./migrations 
+# Copy only compiled output and configs securely
+COPY --from=builder --chown=root:root --chmod=555 dist ./dist
+COPY --from=builder --chown=root:root --chmod=444 package*.json ./
+COPY --from=builder --chown=root:root --chmod=444 nest-cli.json tsconfig*.json ./
 
-RUN npm run build && npm prune --production
+RUN npm ci --ignore-scripts --prefer-offline --only=production && \
+    chmod -R a-w /usr/src/app
 
 USER node
 EXPOSE 3000

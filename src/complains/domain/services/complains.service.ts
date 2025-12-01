@@ -25,7 +25,7 @@ export class ComplainsDomainService {
     private readonly countriesDomainService: CountriesDomainService,
     private readonly statesDomainService: StatesDomainService,
     private readonly notificationService: NotificationsDomainService,
-  ) {}
+  ) { }
 
   async create(createComplainsDto: CreateComplainsDto) {
     const {
@@ -43,63 +43,38 @@ export class ComplainsDomainService {
     const [creator, country, state, documentType, serviceType, currency, type] =
       await Promise.all([
         userCreator &&
-          this.usersDomainService.findOne({ where: whereUserCreator }),
+        this.usersDomainService.findOne({ where: whereUserCreator }),
         complainerCountry &&
-          this.countriesDomainService.findOne({
-            where: { id: complainerCountry },
-          }),
+        this.countriesDomainService.findOne({
+          where: { id: complainerCountry },
+        }),
         complainerState &&
-          this.statesDomainService.findOne({ where: { id: complainerState } }),
+        this.statesDomainService.findOne({ where: { id: complainerState } }),
         documentTypeId &&
-          this.listOfValuesDomainService.findChildByKey(
-            'document_type',
-            documentTypeId,
-          ),
+        this.listOfValuesDomainService.findChildByKey(
+          'document_type',
+          documentTypeId,
+        ),
         serviceTypeId &&
-          this.listOfValuesDomainService.findChildByKey(
-            'service_type',
-            serviceTypeId,
-          ),
+        this.listOfValuesDomainService.findChildByKey(
+          'service_type',
+          serviceTypeId,
+        ),
         currencyId &&
-          this.listOfValuesDomainService.findChildByKey('currency', currencyId),
+        this.listOfValuesDomainService.findChildByKey('currency', currencyId),
         typeId &&
-          this.listOfValuesDomainService.findChildByKey(
-            'complaint_type',
-            typeId,
-          ),
+        this.listOfValuesDomainService.findChildByKey(
+          'complaint_type',
+          typeId,
+        ),
       ]);
-
-    if (userCreator && !creator) {
-      const errorMessage = `No existe admin con id: ${userCreator}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
 
     this.logger.debug(`Creator found: ${JSON.stringify(creator)}`);
 
-    const validateDocumentNumber = this.validateDocumentNumber(
+    this.validateDocumentNumber(
       documentType.name,
       documentNumber,
     );
-
-    if (!validateDocumentNumber) {
-      const documentLength: Record<string, number> = {
-        DNI: 8,
-        RUC: 20,
-        CE: 11,
-      };
-
-      const documentNumberLength = documentLength[documentType.name];
-
-      if (!documentNumberLength) {
-        const errorMessage = `documentNumber invalid because of documentType invalid`;
-        throw new BadRequestException(errorMessage);
-      }
-
-      const errorMessage = `documentNumber must contain only numbers and have ${documentNumberLength} digits for the documentType "${documentType.name}".`;
-      throw new BadRequestException(errorMessage);
-    }
 
     const complains = new Complains();
 
@@ -119,7 +94,7 @@ export class ComplainsDomainService {
     complainsSaved.code = complainsCode;
 
     const complainsCreated =
-      await this.complainsRepository.save(complainsSaved);
+      await this.complainsRepository.update(complainsSaved);
 
     await Promise.all([
       this.notificationService.send({
@@ -131,10 +106,7 @@ export class ComplainsDomainService {
       }),
       this.notificationService.send({
         channel: NotificationChannelEnum.EMAIL,
-        recipient:
-          process.env.APP_ENV === 'PROD'
-            ? 'melissapinday@melvanperu.com'
-            : complainsCreated.complainerEmail,
+        recipient: complainsCreated.complainerEmail,
         subject: 'Melvan - Nuevo reclamo',
         templateId: NotificationEmailTemplateEnum.MELVAN_COMPLAIN,
         message: {
@@ -183,13 +155,6 @@ export class ComplainsDomainService {
       where: whereUserCreator,
     });
 
-    if (!updater) {
-      const errorMessage = `No existe usuario con id: ${userUpdater}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
-
     this.logger.debug(`Updater found: ${JSON.stringify(updater)}`);
 
     Object.assign(complains, updateComplainsDto);
@@ -201,19 +166,26 @@ export class ComplainsDomainService {
     return this.complainsRepository.delete(id);
   }
 
-  private validateDocumentNumber(documentType, documentNumber) {
+  private validateDocumentNumber(documentType: string, documentNumber: string): void {
     const patterns: Record<string, RegExp> = {
       DNI: /^\d{8}$/,
-      RUC: /^(?:20|10)\d{9}$/,
+      RUC: /^(10|20)\d{9}$/,
       CE: /^\d{20}$/,
     };
 
+    const expectedLengths: Record<string, number> = {
+      DNI: 8,
+      RUC: 11,
+      CE: 20,
+    };
+
     const regex = patterns[documentType];
+    const expectedLength = expectedLengths[documentType];
 
-    if (!regex) {
-      return false;
+    if (!regex.test(documentNumber)) {
+      throw new BadRequestException(
+        `documentNumber must contain only numbers and have ${expectedLength} digits for documentType "${documentType}".`,
+      );
     }
-
-    return regex.test(documentNumber);
   }
 }

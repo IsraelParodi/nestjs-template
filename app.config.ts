@@ -1,6 +1,6 @@
 const appConfig = () => ({
   environment: process.env.APP_ENV || 'DEV',
-  port: parseInt(process.env.PORT ?? '3000', 10),
+  port: Number.parseInt(process.env.PORT ?? '3000', 10),
 
   database: {
     host: process.env.DATABASE_HOST ?? 'localhost',

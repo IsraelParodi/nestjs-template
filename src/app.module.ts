@@ -14,6 +14,13 @@ import { LocalitiesModule } from './localities/localities.module';
 import { QuotationsModule } from '@quotations/quotations.module';
 import { ContactUsModule } from '@contact-us/contact-us.module';
 
+const envMap: Record<string, string> = {
+  TEST: '.env.test',
+  production: '.env.production',
+};
+
+const envFilePath = envMap[process.env.APP_ENV ?? ''] ?? '.env.development';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,12 +29,7 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
         DATABASE_HOST: Joi.required(),
         DATABASE_PORT: Joi.number().default(5432),
       }),
-      envFilePath:
-        process.env.APP_ENV === 'TEST'
-          ? '.env.test'
-          : process.env.APP_ENV === 'production'
-            ? '.env.production'
-            : '.env.development',
+      envFilePath: envFilePath
     }),
     ThrottlerModule.forRoot([
       {
@@ -47,7 +49,7 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
           database: process.env.DATABASE_NAME,
           autoLoadEntities: true,
           synchronize: false,
-          logging: true,
+          logging: ['STAGING', "DEV"].includes(process.env.APP_ENV),
           ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV || '')
             ? { ca: process.env.CA_CERT }
             : false,
@@ -66,4 +68,4 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

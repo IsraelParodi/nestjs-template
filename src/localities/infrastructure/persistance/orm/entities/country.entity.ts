@@ -94,7 +94,6 @@ export class CountryEntity {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    default: () => 'CURRENT_TIMESTAMP',
     type: 'timestamp',
   })
   updatedAt: Date;

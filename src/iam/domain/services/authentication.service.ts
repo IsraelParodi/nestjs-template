@@ -46,9 +46,9 @@ export class AuthenticationDomainService {
 
   async signUp(signUpDto: SignUpDto) {
     try {
-      await this.userDomainService.create(signUpDto);
+      const response = await this.userDomainService.create(signUpDto);
 
-      return { message: 'User created successfully' };
+      return { message: 'User created successfully', id: response.id };
     } catch (error) {
       const pgUniqueViolationErrorCode = '23505';
       if (error.code === pgUniqueViolationErrorCode) {

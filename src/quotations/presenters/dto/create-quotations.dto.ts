@@ -1,4 +1,3 @@
-import { IsShippingTypeValid } from '@quotations/infrastructure/decorators/shipping-type.decorator';
 import {
   IsEmail,
   IsNotEmpty,
@@ -49,7 +48,7 @@ export class CreateQuotationsDto {
   @IsNotEmpty()
   transportType: string;
 
-  @IsShippingTypeValid()
+  @IsString()
   shippingType: string;
 
   @IsNumber()

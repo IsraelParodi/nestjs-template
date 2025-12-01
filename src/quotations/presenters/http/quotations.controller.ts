@@ -9,6 +9,8 @@ import {
   Query,
   ParseIntPipe,
   Req,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
@@ -29,12 +31,21 @@ export class QuotationsController {
   ) {}
 
   @Post()
-  create(
+  createTransactional(
     @Body() createQuotationsDto: CreateQuotationsDto,
     @Req() request: Request,
   ) {
     createQuotationsDto.createdBy = request.user?.sub;
     return this.quotationsApplicationService.create(createQuotationsDto);
+  }
+
+  @Post("create-without-transaction")
+  createWithoutTransaction(
+    @Body() createQuotationsDto: CreateQuotationsDto,
+    @Req() request: Request,
+  ) {
+    createQuotationsDto.createdBy = request.user?.sub;
+    return this.quotationsApplicationService.createWithoutTransaction(createQuotationsDto);
   }
 
   @Get()
@@ -76,6 +87,7 @@ export class QuotationsController {
   @Post('massive-delete')
   @Auth(AuthType.Bearer)
   @Roles(RoleEnum.Admin)
+  @HttpCode(HttpStatus.OK)
   removeMany(@Body() deleteManyDto: DeleteManyDto, @Req() request: Request) {
     const deletedBy = request.user.sub;
     return this.quotationsApplicationService.removeMany(

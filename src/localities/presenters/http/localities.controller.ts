@@ -80,4 +80,8 @@ export class LocalitiesController implements OnModuleInit {
       where: { countryId, id },
     });
   }
+
+  resetCountries() {
+    this.countries = [];
+  }
 }

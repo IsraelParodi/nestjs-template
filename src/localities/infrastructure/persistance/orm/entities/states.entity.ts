@@ -47,7 +47,6 @@ export class StateEntity {
   @Column({
     type: 'timestamp',
     name: 'updated_at',
-    default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
   })
   updatedAt: Date;

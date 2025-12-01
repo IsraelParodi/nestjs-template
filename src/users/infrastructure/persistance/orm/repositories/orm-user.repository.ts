@@ -19,7 +19,7 @@ export class OrmUserRepository implements UserRepository {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly pageableService: PageableService,
-  ) {}
+  ) { }
 
   async save(user: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(user);
@@ -39,8 +39,13 @@ export class OrmUserRepository implements UserRepository {
       select,
     });
 
+    const details = Object.entries(where)
+      .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
+      .join(', ');
+
+
     if (!entity) {
-      throw new NotFoundException(`User with ID ${where.id} not found`);
+      throw new NotFoundException(`User with ${details} not found`);
     }
 
     return UserMapper.toDomain(entity);

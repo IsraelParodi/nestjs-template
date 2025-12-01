@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { QuotationsRepository } from '../repositories/quotations.repository';
 import { Quotations } from '../quotations';
 import { IFindOne } from '@common/interfaces/commons.interface';
@@ -26,7 +26,7 @@ export class QuotationsDomainService {
 
   async create(
     createQuotationsDto: CreateQuotationsDto,
-    manager: EntityManager,
+    manager?: EntityManager,
   ) {
     const { executor, countryFound } = await this.quotationsValidations(
       createQuotationsDto,
@@ -108,8 +108,6 @@ export class QuotationsDomainService {
       industryType,
       transportType,
       documentType,
-      shippingType,
-      containerCode,
     } = dto;
     let updatedBy;
 
@@ -125,8 +123,6 @@ export class QuotationsDomainService {
       documentTypeFound,
       industryTypeFound,
       transportTypeFound,
-      originFound,
-      destinationFound,
     ] = await Promise.all([
       whereCondition &&
         this.usersDomainService.findOne({ where: whereUserExecutor }),
@@ -151,24 +147,7 @@ export class QuotationsDomainService {
           'transport_type',
           transportType,
         ),
-      shippingType &&
-        this.listOfValuesDomainService.findChildByName(
-          'shipping_type',
-          shippingType,
-        ),
-      containerCode &&
-        this.listOfValuesDomainService.findChildByName(
-          'containers_size',
-          containerCode,
-        ),
     ]);
-
-    if (!executor && !isCreate) {
-      const errorMessage = `No existe usuario con id: ${executor?.id}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
 
     return {
       executor,
@@ -177,8 +156,6 @@ export class QuotationsDomainService {
       documentTypeFound,
       industryTypeFound,
       transportTypeFound,
-      originFound,
-      destinationFound,
     };
   }
 }

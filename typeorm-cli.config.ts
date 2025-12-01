@@ -2,14 +2,15 @@ import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
 const appEnv = process.env.APP_ENV ?? 'DEV';
+const envMap: Record<string, string> = {
+  TEST: '.env.test',
+  PROD: '.env.production',
+};
+
+const dotenvPath = envMap[appEnv] ?? '.env.development'
 
 dotenv.config({
-  path:
-    appEnv === 'TEST'
-      ? '.env.test'
-      : appEnv === 'production'
-        ? '.env.production'
-        : '.env.development',
+  path: dotenvPath,
 });
 
 export default new DataSource({

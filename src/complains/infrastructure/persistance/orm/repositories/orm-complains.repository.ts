@@ -38,10 +38,6 @@ export class OrmComplainsRepository implements ComplainsRepository {
     return ComplainsMapper.toDomain(persistenceModel);
   }
 
-  async create(complains: Complains): Promise<Complains> {
-    return this.complainsRepository.save(complains);
-  }
-
   async findOne({
     where,
     relations,
@@ -88,9 +84,5 @@ export class OrmComplainsRepository implements ComplainsRepository {
 
   async delete(id: number): Promise<DeleteResult> {
     return this.complainsRepository.softDelete({ id });
-  }
-
-  async restore(id: number): Promise<DeleteResult> {
-    return this.complainsRepository.restore({ id });
   }
 }

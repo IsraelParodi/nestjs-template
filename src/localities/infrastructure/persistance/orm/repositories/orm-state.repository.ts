@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   IFind,
   IFindOne,
@@ -19,17 +19,6 @@ export class OrmStateRepository implements StateRepository {
     private readonly stateRepository: Repository<StateEntity>,
     private readonly pageableService: PageableService,
   ) {}
-
-  async save(state: State): Promise<State> {
-    const persistenceModel = StateMapper.toPersistence(state);
-    const newEntity = await this.stateRepository.save(persistenceModel);
-
-    return StateMapper.toDomain(newEntity);
-  }
-
-  async create(state: State): Promise<State> {
-    return this.stateRepository.save(state);
-  }
 
   async findOne({ where, relations, select }: IFindOne<State>): Promise<State> {
     const entity = await this.stateRepository.findOne({
@@ -61,9 +50,5 @@ export class OrmStateRepository implements StateRepository {
     const data = countries.map((role) => StateMapper.toDomain(role));
 
     return this.pageableService.getPages({ data, total, start, limit });
-  }
-
-  async delete(id: number): Promise<DeleteResult> {
-    return this.stateRepository.softDelete({ id });
   }
 }

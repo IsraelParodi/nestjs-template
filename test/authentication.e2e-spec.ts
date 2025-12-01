@@ -1,28 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as dotenv from 'dotenv';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
 
 describe('[Feature] - Authentication - /authentication', () => {
-  let app: INestApplication;
   let accessToken: string;
   let refreshToken: string;
-
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+  let forgetToken: string;
+  const password = process.env.PASSWORD_TEST
+  const passwordWrong = process.env.PASSWORD_TEST + '0'
 
   describe('Sign Up [POST /authentication/sign-up]', () => {
     it('should sign up successfully', async () => {
       const signUpDto = {
         email: 'israel.parodisch@gmail.com',
-        password: '1234567890',
+        password: password,
         name: 'Israel',
         lastname: 'Parodi',
         businessTaxId: '2010505050',
@@ -30,20 +19,21 @@ describe('[Feature] - Authentication - /authentication', () => {
         country: 173,
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/sign-up')
         .send(signUpDto)
         .expect(201);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.payload).toMatchObject({
         message: 'User created successfully',
+        id: expect.any(Number)
       });
     });
 
     it('should conflict when sign up', async () => {
       const signUpDto = {
         email: 'israel.parodisch@gmail.com',
-        password: '1234567890',
+        password: password,
         name: 'Israel',
         lastname: 'Parodi',
         businessTaxId: '2010505050',
@@ -51,12 +41,12 @@ describe('[Feature] - Authentication - /authentication', () => {
         country: 173,
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/sign-up')
         .send(signUpDto)
         .expect(409);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.error).toMatchObject({
         statusCode: 409,
         message: 'Conflict',
       });
@@ -67,35 +57,35 @@ describe('[Feature] - Authentication - /authentication', () => {
     it('should sign in successfully', async () => {
       const signInDto = {
         email: 'israel.parodisch@gmail.com',
-        password: '1234567890',
+        password: password,
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/sign-in')
         .send(signInDto)
         .expect(200);
 
-      accessToken = response.body.accessToken;
-      refreshToken = response.body.refreshToken;
+      accessToken = response.body.payload.accessToken;
+      refreshToken = response.body.payload.refreshToken;
 
-      expect(response.body).toMatchObject({
+      expect(response.body.payload).toMatchObject({
         accessToken: expect.any(String),
         refreshToken: expect.any(String),
       });
     });
 
     it('should fail while sign in', async () => {
-      const signInDto = {
+      const refreshTokenDto = {
         email: 'israel.parodisch@gmail.com',
-        password: '123456789',
+        password: passwordWrong,
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/sign-in')
-        .send(signInDto)
+        .send(refreshTokenDto)
         .expect(401);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.error).toMatchObject({
         message: 'Email or Password does not match',
         error: 'Unauthorized',
         statusCode: 401,
@@ -109,36 +99,109 @@ describe('[Feature] - Authentication - /authentication', () => {
         refreshToken: refreshToken,
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/refresh-tokens')
         .send(signInDto)
         .expect(200);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.payload).toMatchObject({
         accessToken: expect.any(String),
         refreshToken: expect.any(String),
       });
     });
 
     it('should fail while refresh the token', async () => {
-      const signInDto = {
+      const refreshTokenDto = {
         refreshToken: 'refreshToken',
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(globalThis.app.getHttpServer())
         .post('/authentication/refresh-tokens')
         .set('Authorization', `Bearer ${accessToken}`)
-        .send(signInDto)
+        .send(refreshTokenDto)
         .expect(401);
 
-      expect(response.body).toMatchObject({
+      expect(response.body.error).toMatchObject({
         message: 'Unauthorized',
         statusCode: 401,
       });
     });
   });
 
-  afterAll(async () => {
-    await app.close();
+  describe('Forgot password [POST /authentication/forgot-password]', () => {
+    it('should send email and retrieve token successfully', async () => {
+      const forgetPasswordDto = {
+        email: "israel.parodisch@gmail.com",
+      };
+
+      const response = await request(globalThis.app.getHttpServer())
+        .post('/authentication/forgot-password')
+        .send(forgetPasswordDto)
+        .expect(201);
+
+      forgetToken = response.body.payload.token;
+
+      expect(response.body.payload).toMatchObject({
+        token: expect.any(String),
+      });
+    });
+
+    it('should fail when send an invalid email', async () => {
+      const forgetPasswordDto = {
+        email: "israel@gmail.com",
+      };
+
+      const response = await request(globalThis.app.getHttpServer())
+        .post('/authentication/forgot-password')
+        .send(forgetPasswordDto)
+        .expect(404);
+
+      expect(response.body.error).toMatchObject({
+        message: `User with [${Object.keys(forgetPasswordDto)}]: ${Object.values(forgetPasswordDto)} not found`,
+        error: 'Not Found',
+        statusCode: 404,
+      });
+    });
+  });
+
+  describe('Reset password [POST /authentication/reset-password]', () => {
+    it('should reset password successfully', async () => {
+      const resetPasswordDto = {
+        token: forgetToken,
+        password: password
+      };
+
+      const response = await request(globalThis.app.getHttpServer())
+        .post('/authentication/reset-password')
+        .send(resetPasswordDto)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(201);
+
+      expect(response.body).toMatchObject({
+        succeeded: true,
+        message: "Request successful",
+        timestamp: expect.any(String),
+        errors: expect.any(Array),
+        path: '/authentication/reset-password'
+      });
+    });
+
+    it('should fail when send an invalid email', async () => {
+      const resetPasswordDto = {
+        token: "forgetToken",
+        password: password
+      };
+
+      const response = await request(globalThis.app.getHttpServer())
+        .post('/authentication/reset-password')
+        .send(resetPasswordDto)
+        .expect(400);
+
+      expect(response.body.error).toMatchObject({
+        message: `Invalid or expired token`,
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    });
   });
 });

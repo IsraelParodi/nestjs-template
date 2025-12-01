@@ -44,10 +44,6 @@ export class OrmQuotationsRepository implements QuotationsRepository {
     return QuotationsMapper.toDomain(persistenceModel);
   }
 
-  async create(quotations: Quotations): Promise<Quotations> {
-    return this.quotationsRepository.save(quotations);
-  }
-
   async findOne({
     where,
     relations,
@@ -102,9 +98,5 @@ export class OrmQuotationsRepository implements QuotationsRepository {
       { deletedBy: deletedBy },
     );
     return this.quotationsRepository.softDelete({ id: In(ids) });
-  }
-
-  async restore(id: number): Promise<DeleteResult> {
-    return this.quotationsRepository.restore({ id });
   }
 }

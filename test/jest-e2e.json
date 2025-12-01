@@ -17,5 +17,6 @@
     "^@quotations/(.*)$": "<rootDir>/src/quotations/$1",
     "^@trackings/(.*)$": "<rootDir>/src/trackings/$1",
     "^@contact-us/(.*)$": "<rootDir>/src/contact-us/$1"
-  }
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/global-setup.ts"]
 }

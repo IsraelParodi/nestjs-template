@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "docker compose -f docker-compose.dev.yaml up -d testdb && npm run migration:run:test",
-    "test:e2e": "cross-env APP_ENV=TEST jest --config ./test/jest-e2e.json || true",
+    "test:e2e": "cross-env APP_ENV=TEST jest --config ./test/jest-e2e.json --verbose --runInBand --detectOpenHandles --coverage || true",
     "posttest:e2e": "docker compose -f docker-compose.dev.yaml stop testdb && docker compose -f docker-compose.dev.yaml rm -f testdb",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
     "typeorm:config": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -d typeorm-cli.config.ts",

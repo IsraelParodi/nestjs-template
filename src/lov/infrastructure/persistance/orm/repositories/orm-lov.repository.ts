@@ -20,7 +20,7 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     @InjectRepository(ListOfValuesEntity)
     private readonly listOfValues: Repository<ListOfValuesEntity>,
     private readonly pageableService: PageableService,
-  ) {}
+  ) { }
 
   async save(listOfValues: ListOfValues): Promise<ListOfValues> {
     const persistenceModel = ListOfValuesMapper.toPersistence(listOfValues);
@@ -57,8 +57,13 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
       select,
     });
 
+    const details = Object.entries(wherePartial)
+      .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
+      .join(', ');
+
+
     if (!entity) {
-      throw new NotFoundException(`ListOfValues with ID ${where.id} not found`);
+      throw new NotFoundException(`ListOfValues with ${details} not found`);
     }
 
     return ListOfValuesMapper.toDomain(entity);

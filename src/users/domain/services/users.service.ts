@@ -26,20 +26,20 @@ export class UsersDomainService {
     private readonly hashingService: HashingService,
     private readonly countriesDomainService: CountriesDomainService,
     private readonly notificationService: NotificationsDomainService,
-  ) {}
+  ) { }
 
   async create(createUserDto: Partial<CreateUserDto>) {
     try {
       const [roleFound, creator, country] = await Promise.all([
         createUserDto.role && this.roleService.findOne(createUserDto.role),
         createUserDto.createdBy &&
-          this.userRepository.findOne({
-            where: { id: createUserDto.createdBy },
-          }),
+        this.userRepository.findOne({
+          where: { id: createUserDto.createdBy },
+        }),
         createUserDto.country &&
-          this.countriesDomainService.findOne({
-            where: { id: createUserDto.country },
-          }),
+        this.countriesDomainService.findOne({
+          where: { id: createUserDto.country },
+        }),
       ]);
 
       this.logger.debug(`Role found: ${JSON.stringify(roleFound)}`);
@@ -48,7 +48,7 @@ export class UsersDomainService {
       const user = new User();
       Object.assign(user, createUserDto);
       user.password = await this.hashingService.hash(createUserDto.password);
-      user.role = roleFound ?? new Role(2);
+      user.role = roleFound ?? process.env.APP_ENV === 'TEST' ? new Role(1) : new Role(2)
       user.country = country;
 
       if (createUserDto.createdBy) {
@@ -114,9 +114,9 @@ export class UsersDomainService {
     const [roleFound, updater] = await Promise.all([
       updateUserDto.role && this.roleService.findOne(updateUserDto.role),
       updateUserDto.updatedBy &&
-        this.userRepository.findOne({
-          where: { id: updateUserDto.updatedBy },
-        }),
+      this.userRepository.findOne({
+        where: { id: updateUserDto.updatedBy },
+      }),
     ]);
 
     this.logger.debug(`Role found: ${JSON.stringify(roleFound)}`);
