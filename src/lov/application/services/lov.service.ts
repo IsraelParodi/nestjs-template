@@ -7,15 +7,17 @@ import { ListOfValuesDomainService } from '@lov/domain/services/lov.service';
 import { ListOfValues } from '@lov/domain/lov';
 import { UpdateListOfValuesDto } from '@lov/presenters/dto/update-lov.dto';
 import { CreateListOfValuesDto } from '@lov/presenters/dto/create-lov.dto';
+import { ListOfValuesMapper } from '@lov/infrastructure/persistance/orm/mappers/lov.mapper';
 
 @Injectable()
 export class ListOfValuesApplicationService {
   constructor(
     private readonly listOfValuesDomainService: ListOfValuesDomainService,
-  ) {}
+  ) { }
 
   async create(createListOfValuesDto: CreateListOfValuesDto) {
-    return await this.listOfValuesDomainService.create(createListOfValuesDto);
+    const createListOfValues = ListOfValuesMapper.fromDtotoDomain(createListOfValuesDto);
+    return await this.listOfValuesDomainService.create(createListOfValues);
   }
 
   findAll(paginationQueryDto: PaginationQueryDto) {
@@ -27,6 +29,7 @@ export class ListOfValuesApplicationService {
       where,
       relations,
       select,
+      validate: true
     });
   }
 

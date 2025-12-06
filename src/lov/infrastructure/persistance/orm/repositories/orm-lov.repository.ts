@@ -40,14 +40,10 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     return ListOfValuesMapper.toDomain(persistenceModel);
   }
 
-  async create(listOfValues: ListOfValues): Promise<ListOfValues> {
-    return this.listOfValues.save(listOfValues);
-  }
-
   async findOne({
     where,
     relations,
-    select,
+    select
   }: IFindOne<ListOfValues>): Promise<ListOfValues> {
     const wherePartial: Partial<ListOfValues> = where;
 
@@ -57,17 +53,8 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
       select,
     });
 
-    const details = Object.entries(wherePartial)
-      .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
-      .join(', ');
-
-
-    if (!entity) {
-      throw new NotFoundException(`ListOfValues with ${details} not found`);
-    }
-
-    return ListOfValuesMapper.toDomain(entity);
-  }
+    return entity ? ListOfValuesMapper.toDomain(entity) : null;
+  };
 
   async find({
     where,

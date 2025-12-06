@@ -29,18 +29,6 @@ export class OrmContactUsRepository implements ContactUsRepository {
     return ContactUsMapper.toDomain(newEntity);
   }
 
-  async update(contactUs: ContactUs): Promise<ContactUs> {
-    const persistenceModel = ContactUsMapper.toPersistence(contactUs);
-
-    await this.contactUsRepository.save(persistenceModel);
-
-    return ContactUsMapper.toDomain(persistenceModel);
-  }
-
-  async create(contactUs: ContactUs): Promise<ContactUs> {
-    return this.contactUsRepository.save(contactUs);
-  }
-
   async findOne({
     where,
     relations,
@@ -98,9 +86,5 @@ export class OrmContactUsRepository implements ContactUsRepository {
       { deletedBy: deletedBy },
     );
     return this.contactUsRepository.softDelete({ id: In(ids) });
-  }
-
-  async restore(id: number): Promise<DeleteResult> {
-    return this.contactUsRepository.restore({ id });
   }
 }

@@ -20,13 +20,10 @@ export class ContactUsDomainService {
     private readonly usersDomainService: UsersDomainService,
     private readonly countriesDomainService: CountriesDomainService,
     private readonly notificationsApplicationService: NotificationsApplicationService,
-  ) {}
+  ) { }
 
   async create(contactUs: ContactUs) {
-    const { executor, countryFound } = await this.contactUsValidations(
-      contactUs,
-      true,
-    );
+    const { executor, countryFound } = await this.contactUsValidations(contactUs);
     this.logger.debug(`Creator found: ${JSON.stringify(executor)}`);
 
     contactUs.country = countryFound;
@@ -85,31 +82,19 @@ export class ContactUsDomainService {
     return this.contactUsRepository.deleteMany(deleteManyDto, deletedBy);
   }
 
-  async contactUsValidations(dto: ContactUs, isCreate: boolean) {
+  async contactUsValidations(dto: ContactUs) {
     const { createdBy, country } = dto;
-    let updatedBy;
 
-    if ('updatedBy' in dto) {
-      updatedBy = dto.updatedBy;
-    }
-
-    const whereCondition = isCreate ? createdBy.id : updatedBy;
+    const whereCondition = createdBy && createdBy.id;
     const whereUserExecutor = { id: whereCondition };
     const [executor, countryFound] = await Promise.all([
       whereCondition &&
-        this.usersDomainService.findOne({ where: whereUserExecutor }),
+      this.usersDomainService.findOne({ where: whereUserExecutor }),
       country &&
-        this.countriesDomainService.findOne({
-          where: { id: country.id },
-        }),
+      this.countriesDomainService.findOne({
+        where: { id: country.id },
+      }),
     ]);
-
-    if (!executor && !isCreate) {
-      const errorMessage = `No existe usuario con id: ${executor?.id}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
 
     return {
       executor,

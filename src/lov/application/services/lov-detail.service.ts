@@ -24,18 +24,6 @@ export class ListOfValuesDetailApplicationService {
     );
   }
 
-  findAll(paginationQueryDto: PaginationQueryDto) {
-    return this.listOfValuesDetailDomainService.findAll(paginationQueryDto);
-  }
-
-  findOne({ where, relations, select }: IFindOne<ListOfValuesDetail>) {
-    return this.listOfValuesDetailDomainService.findOne({
-      where,
-      relations,
-      select,
-    });
-  }
-
   update(id: number, updateListOfValuesDto: UpdateListOfValuesDetailDto) {
     return this.listOfValuesDetailDomainService.update(
       id,

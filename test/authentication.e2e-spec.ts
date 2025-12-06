@@ -156,8 +156,12 @@ describe('[Feature] - Authentication - /authentication', () => {
         .send(forgetPasswordDto)
         .expect(404);
 
+      const details = Object.entries(forgetPasswordDto)
+        .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
+        .join(', ');
+
       expect(response.body.error).toMatchObject({
-        message: `User with [${Object.keys(forgetPasswordDto)}]: ${Object.values(forgetPasswordDto)} not found`,
+        message: `User with ${details} not found`,
         error: 'Not Found',
         statusCode: 404,
       });

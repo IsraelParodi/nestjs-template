@@ -8,6 +8,8 @@ import {
   Query,
   ParseIntPipe,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
@@ -24,14 +26,17 @@ import { PaginationQueryContactUsDto } from '../dto/pagination-query-contact-us.
 export class ContactUsController {
   constructor(
     private readonly contactUsApplicationService: ContactUsApplicationService,
-  ) {}
+  ) { }
 
   @Post()
   create(
     @Body() createContactUsDto: CreateContactUsDto,
     @Req() request: Request,
   ) {
-    createContactUsDto.createdBy = request.user?.sub;
+    if (!createContactUsDto.createdBy) {
+      createContactUsDto.createdBy = request.user?.sub;
+    }
+
     return this.contactUsApplicationService.create(createContactUsDto);
   }
 
@@ -67,6 +72,7 @@ export class ContactUsController {
   @Post('massive-delete')
   @Auth(AuthType.Bearer)
   @Roles(RoleEnum.Admin)
+  @HttpCode(HttpStatus.OK)
   removeMany(@Body() deleteManyDto: DeleteManyDto, @Req() request: Request) {
     const deletedBy = request.user.sub;
     return this.contactUsApplicationService.removeMany(

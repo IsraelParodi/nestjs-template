@@ -24,16 +24,6 @@ export class OrmListOfValuesDetailRepository
     private readonly pageableService: PageableService,
   ) {}
 
-  async save(
-    listOfValuesDetail: ListOfValuesDetail,
-  ): Promise<ListOfValuesDetail> {
-    const persistenceModel =
-      ListOfValuesDetailMapper.toPersistence(listOfValuesDetail);
-    const newEntity = await this.listOfValuesDetail.save(persistenceModel);
-
-    return ListOfValuesDetailMapper.toDomain(newEntity);
-  }
-
   async update(
     listOfValuesDetail: ListOfValuesDetail,
   ): Promise<ListOfValuesDetail> {
@@ -68,34 +58,7 @@ export class OrmListOfValuesDetailRepository
       withDeleted: true,
     });
 
-    if (!entity) {
-      throw new NotFoundException(
-        `ListOfValuesDetail with ID ${where.id} not found`,
-      );
-    }
-
     return ListOfValuesDetailMapper.toDomain(entity);
-  }
-
-  async find({
-    where,
-    relations,
-    start,
-    limit,
-  }: IFind): Promise<PaginatedResult<ListOfValuesDetail>> {
-    const [listOfValuesDetail, total] =
-      await this.listOfValuesDetail.findAndCount({
-        where,
-        relations,
-        skip: start,
-        take: limit,
-      });
-
-    const data = listOfValuesDetail.map((listOfValuesDetail) =>
-      ListOfValuesDetailMapper.toDomain(listOfValuesDetail),
-    );
-
-    return this.pageableService.getPages({ data, total, start, limit });
   }
 
   async delete(id: number): Promise<DeleteResult> {

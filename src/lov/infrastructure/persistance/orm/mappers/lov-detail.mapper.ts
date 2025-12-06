@@ -74,7 +74,6 @@ export class ListOfValuesDetailMapper {
   private static mapKeyToDomain(
     listOfValuesEntity?: ListOfValuesEntity,
   ): ListOfValues {
-    if (!listOfValuesEntity) return null;
     const listOfValues = new ListOfValues(listOfValuesEntity.id);
     listOfValues.key = listOfValuesEntity.key;
     return listOfValues;
@@ -83,8 +82,6 @@ export class ListOfValuesDetailMapper {
   private static mapKeyToPersistence(
     listOfValues?: ListOfValues,
   ): ListOfValuesEntity {
-    if (!listOfValues) return null;
-
     const listOfValuesEntity = new ListOfValuesEntity();
     listOfValuesEntity.id = listOfValues.id;
     listOfValuesEntity.key = listOfValues.key;

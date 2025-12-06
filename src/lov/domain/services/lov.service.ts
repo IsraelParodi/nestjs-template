@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
 import { IFindOne } from '@common/interfaces/commons.interface';
@@ -8,8 +8,8 @@ import { UsersDomainService } from '@users/domain/services/users.service';
 import { ListOfValues } from '../lov';
 import { ListOfValuesRepository } from '../repositories/lov.repository';
 
-import { CreateListOfValuesDto } from '@lov/presenters/dto/create-lov.dto';
 import { UpdateListOfValuesDto } from '@lov/presenters/dto/update-lov.dto';
+import { structuredObject } from '@common/common.utils';
 
 @Injectable()
 export class ListOfValuesDomainService {
@@ -18,20 +18,22 @@ export class ListOfValuesDomainService {
   constructor(
     private readonly listOfValuesRepository: ListOfValuesRepository,
     private readonly usersDomainService: UsersDomainService,
-  ) {}
+  ) { }
 
-  async create(createListOfValuesDto: CreateListOfValuesDto) {
-    const { createdBy: userCreator } = createListOfValuesDto;
+  async create(listOfValue: ListOfValues) {
+    const { createdBy } = listOfValue;
 
-    const creator = await this.findUserOrThrow(
-      userCreator,
-      `No existe admin con id: ${userCreator}`,
-      'Creator',
-    );
+    const creator = await this.usersDomainService.findOne({
+      where: { id: createdBy.id },
+    });
+
+    const lov = await this.findOne({ where: { key: listOfValue.key } })
+
+    if (lov) throw new BadRequestException('The LOV already exists');
 
     const listOfValues = new ListOfValues();
-    listOfValues.key = createListOfValuesDto.key;
-    listOfValues.description = createListOfValuesDto.description;
+    listOfValues.key = listOfValue.key;
+    listOfValues.description = listOfValue.description;
     listOfValues.createdBy = creator;
 
     const listOfValuesCreated =
@@ -47,23 +49,26 @@ export class ListOfValuesDomainService {
     return this.listOfValuesRepository.find({ start, limit });
   }
 
-  findOne({ where, relations, select }: IFindOne<ListOfValues>) {
-    return this.listOfValuesRepository.findOne({ where, relations, select });
+  async findOne({ where, relations, select, validate = false }: IFindOne<ListOfValues>) {
+    const lov = await this.listOfValuesRepository.findOne({ where, relations, select });
+
+    if (validate && !lov) throw new NotFoundException(`LOV with ${structuredObject(where)} not found`);
+
+    return lov
   }
 
   async update(id: number, updateListOfValuesDto: UpdateListOfValuesDto) {
     const listOfValues = await this.findOne({
       where: { id },
       relations: ['createdBy', 'updatedBy'],
+      validate: true
     });
 
     const { updatedBy: userUpdater } = updateListOfValuesDto;
 
-    const updater = await this.findUserOrThrow(
-      userUpdater,
-      `No existe usuario con id: ${userUpdater}`,
-      'Updater',
-    );
+    const updater = await this.usersDomainService.findOne({
+      where: { id: userUpdater },
+    });
 
     Object.assign(listOfValues, updateListOfValuesDto);
     listOfValues.updatedBy = updater;
@@ -95,36 +100,8 @@ export class ListOfValuesDomainService {
     );
   }
 
-  // ---------- private helpers ----------
-
-  private async findUserOrThrow(
-    userId: number | undefined,
-    notFoundMessage: string,
-    debugLabel: string,
-  ) {
-    if (!userId) {
-      return undefined;
-    }
-
-    const user = await this.usersDomainService.findOne({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      this.throwBadRequest(notFoundMessage);
-    }
-
-    this.logger.debug(`${debugLabel} found: ${JSON.stringify(user)}`);
-
-    return user;
-  }
-
   private async findLovWithValuesOrThrow(key: string): Promise<ListOfValues> {
     const lov = await this.findOne({ where: { key }, relations: ['values'] });
-
-    if (!lov) {
-      this.throwBadRequest(`Don't exist a LOV with key: ${key}`);
-    }
 
     return lov;
   }

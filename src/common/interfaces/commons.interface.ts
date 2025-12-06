@@ -4,6 +4,7 @@ export interface IFindOne<T> {
   where?: Partial<T>;
   select?: FindOptionsSelect<T>;
   relations?: string[];
+  validate?: boolean
 }
 
 export interface IFind {

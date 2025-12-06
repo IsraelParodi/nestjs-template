@@ -72,6 +72,7 @@ export class ContactUsMapper {
     entity.lastname = contactUs.lastname;
     entity.email = contactUs.email;
     entity.phone = contactUs.phone;
+    entity.phoneCode = contactUs.phoneCode;
     entity.message = contactUs.message;
     entity.acceptPrivacyPolicies = contactUs.acceptPrivacyPolicies;
     entity.receiveAdditionalInformation =

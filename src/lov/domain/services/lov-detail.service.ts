@@ -38,13 +38,6 @@ export class ListOfValuesDetailDomainService {
         }),
     ]);
 
-    if (userCreator && !creator) {
-      const errorMessage = `No existe admin con id: ${userCreator}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
-
     this.logger.debug(`Creator found: ${JSON.stringify(creator)}`);
 
     const listOfValuesDetail = new ListOfValuesDetail();
@@ -57,10 +50,6 @@ export class ListOfValuesDetailDomainService {
       await this.listOfValuesDetailRepository.create(listOfValuesDetail);
 
     return this.findOne({ where: { id: listOfValuesCreated.id } });
-  }
-
-  findAll({ start, limit }: PaginationQueryDto) {
-    return this.listOfValuesDetailRepository.find({ start, limit });
   }
 
   findOne({ where, relations, select }: IFindOne<ListOfValuesDetail>) {
@@ -83,13 +72,6 @@ export class ListOfValuesDetailDomainService {
     const updater = await this.usersDomainService.findOne({
       where: whereUserCreator,
     });
-
-    if (userUpdater && !updater) {
-      const errorMessage = `No existe usuario con id: ${userUpdater}`;
-      this.logger.debug(errorMessage);
-
-      throw new BadRequestException(errorMessage);
-    }
 
     this.logger.debug(`Updater found: ${JSON.stringify(updater)}`);
 

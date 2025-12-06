@@ -6,6 +6,7 @@ import { ListOfValuesEntity } from '../entities/lov.entity';
 import { ListOfValues } from '@lov/domain/lov';
 import { ListOfValuesDetailEntity } from '../entities/lov-detail.entity';
 import { ListOfValuesDetailMapper } from './lov-detail.mapper';
+import { CreateListOfValuesDto } from '@lov/presenters/dto/create-lov.dto';
 
 export class ListOfValuesMapper {
   static toDomain(listOfValuesEntity: ListOfValuesEntity): ListOfValues {
@@ -68,4 +69,14 @@ export class ListOfValuesMapper {
   private static mapUserReferenceToPersistence(user?: User): UserEntity {
     return UserMapper.mapUserReferenceToPersistence(user);
   }
+
+  static fromDtotoDomain(dto: CreateListOfValuesDto): ListOfValues {
+      const lov = new ListOfValues();
+  
+      lov.key = dto.key;
+      lov.description = dto.description;
+      lov.createdBy = new User(dto.createdBy);
+  
+      return lov;
+    }
 }

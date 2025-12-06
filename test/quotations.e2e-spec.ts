@@ -1,7 +1,6 @@
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./tests.helper";
 import * as request from 'supertest';
 
-
 const expectedCountryShape = {
   id: expect.any(Number),
   name: expect.any(String),
@@ -55,6 +54,16 @@ describe('[Feature] - Quotations - /quotations', () => {
     it('should create a quotation', async () => {
       const response = await postRequest('/quotations', quotationDto);
       expectQuotationPayload(response.body.payload, quotationDto);
+    });
+
+    it('should create a quotation and return a LOV validation error', async () => {
+      const customQuotationDto = { ...quotationDto, userType: "Persona" }
+      const response = await postRequest('/quotations', { ...quotationDto, userType: "Persona" }, 400);
+      expect(response.body.error).toEqual({
+        message: `Don't exist a LOV Detail with name: ${customQuotationDto.userType} in LOV with key: user_type`,
+        error: 'Bad Request',
+        statusCode: 400,
+      });
     });
 
     it('should create a quotation without unit of work pattern', async () => {
