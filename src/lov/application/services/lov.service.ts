@@ -13,10 +13,12 @@ import { ListOfValuesMapper } from '@lov/infrastructure/persistance/orm/mappers/
 export class ListOfValuesApplicationService {
   constructor(
     private readonly listOfValuesDomainService: ListOfValuesDomainService,
-  ) { }
+  ) {}
 
   async create(createListOfValuesDto: CreateListOfValuesDto) {
-    const createListOfValues = ListOfValuesMapper.fromDtotoDomain(createListOfValuesDto);
+    const createListOfValues = ListOfValuesMapper.fromDtotoDomain(
+      createListOfValuesDto,
+    );
     return await this.listOfValuesDomainService.create(createListOfValues);
   }
 
@@ -29,7 +31,7 @@ export class ListOfValuesApplicationService {
       where,
       relations,
       select,
-      validate: true
+      validate: true,
     });
   }
 

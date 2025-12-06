@@ -12,6 +12,7 @@ import {
 } from '@common/interfaces/commons.interface';
 import { PageableService } from '@common/services/pageable.service';
 import { DeleteManyDto } from '@common/dto/delete-many.dto';
+import { structuredObject } from '@common/common.utils';
 
 @Injectable()
 export class OrmUserRepository implements UserRepository {
@@ -19,14 +20,7 @@ export class OrmUserRepository implements UserRepository {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly pageableService: PageableService,
-  ) { }
-
-  async save(user: User): Promise<User> {
-    const persistenceModel = UserMapper.toPersistence(user);
-    const newEntity = await this.userRepository.save(persistenceModel);
-
-    return UserMapper.toDomain(newEntity);
-  }
+  ) {}
 
   async create(user: User): Promise<User> {
     return this.userRepository.save(user);
@@ -39,13 +33,10 @@ export class OrmUserRepository implements UserRepository {
       select,
     });
 
-    const details = Object.entries(where)
-      .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
-      .join(', ');
-
-
     if (!entity) {
-      throw new NotFoundException(`User with ${details} not found`);
+      throw new NotFoundException(
+        `User with ${structuredObject(where)} not found`,
+      );
     }
 
     return UserMapper.toDomain(entity);
@@ -70,6 +61,17 @@ export class OrmUserRepository implements UserRepository {
     const data = users.map((role) => UserMapper.toDomain(role));
 
     return this.pageableService.getPages({ data, total, start, limit });
+  }
+
+  async update(user: User): Promise<User> {
+    const persistenceModel = UserMapper.toPersistence(user);
+
+    await this.userRepository.update(
+      { id: persistenceModel.id },
+      persistenceModel,
+    );
+
+    return UserMapper.toDomain(persistenceModel);
   }
 
   async delete(id: number): Promise<DeleteResult> {

@@ -6,6 +6,9 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "testPathIgnorePatterns": ["/node_modules/", "/dist/"],
+  "modulePathIgnorePatterns": ["/dist/"],
+  "watchman": false,
   "moduleNameMapper": {
     "^@iam/(.*)$": "<rootDir>/src/iam/$1",
     "^@common/(.*)$": "<rootDir>/src/common/$1",

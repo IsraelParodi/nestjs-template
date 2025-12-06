@@ -1,19 +1,26 @@
-import { deleteRequest, getRequest, postRequest } from "./tests.helper";
+import { deleteRequest, getRequest, postRequest } from '../tests.helper';
 import * as request from 'supertest';
 
 const BASE_URL = '/contact-us';
 
 const baseContactUsDto = {
-  "name": "Luis",
-  "lastname": "Ramirez",
-  "email": "israelps97@gmail.com",
-  "phoneCode": "+51",
-  "phone": "987654321",
-  "message": "Hola, estoy interesado en conocer más sobre sus servicios de transporte internacional.",
-  "acceptPrivacyPolicies": true,
-  "receiveAdditionalInformation": false,
-  "country": 173
+  name: 'Luis',
+  lastname: 'Ramirez',
+  email: 'israelps97@gmail.com',
+  phoneCode: '+51',
+  phone: '987654321',
+  message:
+    'Hola, estoy interesado en conocer más sobre sus servicios de transporte internacional.',
+  acceptPrivacyPolicies: true,
+  receiveAdditionalInformation: false,
+  country: 173,
 };
+
+function expectContactUsListShape(response: any) {
+  expect(response.body.payload.data).toHaveLength(2);
+  expect(response.body.payload.total).toBe(2);
+  expect(response.body.payload.totalPages).toBe(1);
+}
 
 function expectContactUsShape(payload: any) {
   expect(payload).toMatchObject({
@@ -35,22 +42,29 @@ describe('[Feature] - Contact Us - /contact-us', () => {
     it('should create a contact us form', async () => {
       const response = await postRequest(BASE_URL, baseContactUsDto);
       expectContactUsShape(response.body.payload);
-      expect(response.body.payload.country).toMatchObject({ id: baseContactUsDto.country, name: expect.any(String) });
+      expect(response.body.payload.country).toMatchObject({
+        id: baseContactUsDto.country,
+        name: expect.any(String),
+      });
     });
 
     it('should create a contact us form with createdBy', async () => {
-      const response = await postRequest(BASE_URL, {...baseContactUsDto, createdBy: 1});
+      const response = await postRequest(BASE_URL, {
+        ...baseContactUsDto,
+        createdBy: 1,
+      });
       expectContactUsShape(response.body.payload);
-      expect(response.body.payload.country).toMatchObject({ id: baseContactUsDto.country, name: expect.any(String) });
+      expect(response.body.payload.country).toMatchObject({
+        id: baseContactUsDto.country,
+        name: expect.any(String),
+      });
     });
   });
 
   describe('Contact Us [GET /contact-us]', () => {
     it('should return a list of contact-us', async () => {
       const response = await getRequest(BASE_URL, 200, true);
-      expect(response.body.payload.data).toHaveLength(2);
-      expect(response.body.payload.total).toBe(2);
-      expect(response.body.payload.totalPages).toBe(1);
+      expectContactUsListShape(response);
       expectContactUsShape(response.body.payload.data[0]);
     });
 
@@ -60,9 +74,7 @@ describe('[Feature] - Contact Us - /contact-us', () => {
         .set('Authorization', `Bearer ${globalThis.accessToken}`)
         .query({ name: 'Luis', lastname: 'Ramirez' })
         .expect(200);
-      expect(response.body.payload.data).toHaveLength(2);
-      expect(response.body.payload.total).toBe(2);
-      expect(response.body.payload.totalPages).toBe(1);
+      expectContactUsListShape(response);
       expectContactUsShape(response.body.payload.data[0]);
     });
   });
@@ -71,12 +83,18 @@ describe('[Feature] - Contact Us - /contact-us', () => {
     it('should return a contact us form by id', async () => {
       const response = await getRequest(`${BASE_URL}/1`, 200, true);
       expectContactUsShape(response.body.payload);
-      expect(response.body.payload.country).toMatchObject({ name: expect.any(String) });
+      expect(response.body.payload.country).toMatchObject({
+        name: expect.any(String),
+      });
     });
 
     it('should return error when contact us form not found', async () => {
       const contactUsId = 9999;
-      const response = await getRequest(`${BASE_URL}/${contactUsId}`, 404, true);
+      const response = await getRequest(
+        `${BASE_URL}/${contactUsId}`,
+        404,
+        true,
+      );
       expect(response.body.error).toEqual({
         message: `ContactUs with ID ${contactUsId} not found`,
         error: 'Not Found',
@@ -101,7 +119,7 @@ describe('[Feature] - Contact Us - /contact-us', () => {
         '/contact-us/massive-delete',
         { ids: [responseCreate.body.payload.id] },
         200,
-        true
+        true,
       );
       expect(response.body.payload).toEqual({
         generatedMaps: expect.any(Array),

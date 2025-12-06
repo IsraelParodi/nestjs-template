@@ -1,6 +1,5 @@
-
-import * as request from 'supertest';
 import { LocalitiesController } from '@localities/presenters/http/localities.controller';
+import { getRequest } from '../tests.helper';
 
 const expectedCountryShape = {
   id: expect.any(Number),
@@ -48,10 +47,6 @@ const expectedStateShape = {
   wikiDataId: expect.any(String),
 };
 
-async function getRequest(path: string, expectedStatus = 200) {
-  return request(globalThis.app.getHttpServer()).get(path).expect(expectedStatus);
-}
-
 function expectCountryPayload(payload: any) {
   expect(payload).toMatchObject(expectedCountryShape);
 }
@@ -81,8 +76,13 @@ describe('[Feature] - Localities - /localities', () => {
 
     it('country not found in memory', async () => {
       const countryId = 999999;
-      const response = await getRequest(`/localities/countries/${countryId}`, 404);
-      expect(response.body.error).toMatchObject({ message: `Country with ID ${countryId} not found` });
+      const response = await getRequest(
+        `/localities/countries/${countryId}`,
+        404,
+      );
+      expect(response.body.error).toMatchObject({
+        message: `Country with ID ${countryId} not found`,
+      });
     });
   });
 
@@ -104,7 +104,10 @@ describe('[Feature] - Localities - /localities', () => {
 
     it('should return an error not found when send invalid ID', async () => {
       const countryCode = 999999;
-      const response = await getRequest(`/localities/countries/${countryCode}`, 404);
+      const response = await getRequest(
+        `/localities/countries/${countryCode}`,
+        404,
+      );
       expect(response.body.error).toMatchObject({
         message: `Country with ID ${countryCode} not found`,
         error: 'Not Found',
@@ -116,7 +119,9 @@ describe('[Feature] - Localities - /localities', () => {
   describe('States from country [GET /localities/countries/:id/states]', () => {
     it('should return a list of states from Peru', async () => {
       const countryCode = 173;
-      const response = await getRequest(`/localities/countries/${countryCode}/states`);
+      const response = await getRequest(
+        `/localities/countries/${countryCode}/states`,
+      );
       expect(response.body.payload.data).toHaveLength(25);
       expect(response.body.payload.total).toBe(25);
       expect(response.body.payload.totalPages).toBe(null);
@@ -128,7 +133,9 @@ describe('[Feature] - Localities - /localities', () => {
     it('should return a state from Peru', async () => {
       const countryCode = 173;
       const stateCode = 3678;
-      const response = await getRequest(`/localities/countries/${countryCode}/states/${stateCode}`);
+      const response = await getRequest(
+        `/localities/countries/${countryCode}/states/${stateCode}`,
+      );
       expect(response.body.payload).toMatchObject({
         id: stateCode,
         name: 'Madre de Dios',
@@ -141,7 +148,10 @@ describe('[Feature] - Localities - /localities', () => {
     it('should return an error not found', async () => {
       const countryCode = 173;
       const stateCode = 9999999;
-      const response = await getRequest(`/localities/countries/${countryCode}/states/${stateCode}`, 404);
+      const response = await getRequest(
+        `/localities/countries/${countryCode}/states/${stateCode}`,
+        404,
+      );
       expect(response.body.error).toMatchObject({
         message: `State with ID ${stateCode} not found`,
         error: 'Not Found',

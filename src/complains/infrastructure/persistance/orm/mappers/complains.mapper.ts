@@ -53,7 +53,7 @@ export class ComplainsMapper {
   static toPersistence(complains: Complains): ComplainsEntity {
     const entity = new ComplainsEntity();
 
-    entity.id = complains.id
+    entity.id = complains.id;
     entity.code = complains.code;
     entity.status = complains.status;
     entity.nationalTaxpayerRegistry = complains.nationalTaxpayerRegistry;

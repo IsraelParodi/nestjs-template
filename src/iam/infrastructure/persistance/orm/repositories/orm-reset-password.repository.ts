@@ -5,7 +5,6 @@ import { ResetPasswordRepository } from '@iam/domain/repositories/reset-password
 import { ResetPassword } from '@iam/domain/reset-password';
 import { ResetPasswordMapper } from '../mappers/reset-password.mapper';
 import { ResetPasswordEntity } from '../entities/reset-password.entity';
-import { IFind, PaginatedResult } from '@common/interfaces/commons.interface';
 import { PageableService } from '@common/services/pageable.service';
 
 @Injectable()
@@ -21,28 +20,6 @@ export class OrmResetPasswordRepository implements ResetPasswordRepository {
     const newEntity = await this.resetPasswordRepository.save(persistenceModel);
 
     return ResetPasswordMapper.toDomain(newEntity);
-  }
-
-  async create(resetPassword: ResetPassword): Promise<ResetPassword> {
-    return this.resetPasswordRepository.create(resetPassword);
-  }
-
-  async find({
-    where,
-    relations,
-    start,
-    limit,
-  }: IFind): Promise<PaginatedResult<ResetPassword>> {
-    const [tokens, total] = await this.resetPasswordRepository.findAndCount({
-      where,
-      relations,
-      skip: start,
-      take: limit,
-    });
-
-    const data = tokens.map((role) => ResetPasswordMapper.toDomain(role));
-
-    return this.pageableService.getPages({ data, total, start, limit });
   }
 
   async findOne({

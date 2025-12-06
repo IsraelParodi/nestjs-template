@@ -14,12 +14,12 @@ export class AuthInspectorService {
 
   getAuthMetadata() {
     const controllers = this.discovery.getControllers();
-    const protectedEndpoints = { admin: [], none: [], other: {} };
-    const publicEndpoints = { admin: [], none: [], other: {} };
+
+    const protectedEndpoints = { admin: [], none: [] };
+    const publicEndpoints = { admin: [], none: [] };
 
     controllers.forEach((wrapper) => {
       const { instance } = wrapper;
-      if (!instance || typeof instance !== 'object') return;
 
       const controllerName = instance.constructor.name;
       const prototype = Object.getPrototypeOf(instance);
@@ -30,11 +30,10 @@ export class AuthInspectorService {
 
       methodNames.forEach((methodName) => {
         const method = prototype[methodName];
-        if (typeof method !== 'function') return;
-
         const methodAuthType = this.getMethodAuthType(method, classAuthType);
-        const roles = this.reflector.get(ROLES_KEY, method) || [];
+        const roles: string[] = this.reflector.get(ROLES_KEY, method) || [];
         const fullPath = this.getFullPath(method, controllerPath);
+
         const methodMetadata = this.createMetadata(
           method,
           methodName,
@@ -58,11 +57,7 @@ export class AuthInspectorService {
   }
 
   private getControllerPath(instance: any): string {
-    const controllerPath =
-      this.reflector.get('path', instance.constructor) || '';
-    return controllerPath === '' || controllerPath === '/'
-      ? `/${instance.constructor.name}`
-      : controllerPath;
+    return this.reflector.get('path', instance.constructor);
   }
 
   private getClassAuthType(instance: any): AuthType | undefined {
@@ -88,48 +83,51 @@ export class AuthInspectorService {
 
   private getFullPath(method: Function, controllerPath: string): string {
     const routePath = this.reflector.get('path', method) || '';
-    return routePath === '' || routePath === '/'
-      ? `/${controllerPath}`
-      : `/${controllerPath}/${routePath}`;
+
+    const base = controllerPath.replace(/^\/+/, '');
+
+    if (!routePath || routePath === '/') {
+      return `/${base}`;
+    }
+
+    const normalizedRoute = routePath.replace(/^\/+/, '');
+    return `/${base}/${normalizedRoute}`;
   }
 
   private createMetadata(
     method: Function,
     methodName: string,
     fullPath: string,
-    authType: AuthType,
+    authType: AuthType | undefined,
     roles: string[],
     controllerName: string,
   ) {
     const httpMethod: RequestMethod = this.reflector.get('method', method);
+
     return {
       controller: controllerName,
       method: methodName,
       httpMethod: this.getHttpMethodName(httpMethod),
-      auth: authType === undefined ? 'Unknown' : AuthType[authType],
-      roles: roles,
+      auth: AuthType[authType],
+      roles,
       path: fullPath,
     };
   }
 
   private categorizeEndpoint(
-    authType: AuthType,
+    authType: AuthType | undefined,
     roles: string[],
     metadata: any,
-    protectedEndpoints,
-    publicEndpoints,
+    protectedEndpoints: { admin: any[]; none: any[] },
+    publicEndpoints: { admin: any[]; none: any[] },
   ) {
     const target =
       authType === AuthType.Bearer ? protectedEndpoints : publicEndpoints;
+
     if (roles.includes('admin')) {
       target.admin.push(metadata);
-    } else if (roles.length === 0) {
-      target.none.push(metadata);
     } else {
-      roles.forEach((role) => {
-        if (!target.other[role]) target.other[role] = [];
-        target.other[role].push(metadata);
-      });
+      target.none.push(metadata);
     }
   }
 
@@ -140,10 +138,6 @@ export class AuthInspectorService {
       const categories = [
         { role: 'admin', endpoints: endpoints.admin },
         { role: 'none', endpoints: endpoints.none },
-        ...Object.keys(endpoints.other).map((role) => ({
-          role,
-          endpoints: endpoints.other[role],
-        })),
       ]
         .filter((category) => category.endpoints.length > 0)
         .map((category) => ({

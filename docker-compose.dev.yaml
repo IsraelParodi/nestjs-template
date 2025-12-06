@@ -8,6 +8,8 @@ services:
       - .env.development
     volumes:
       - data:/var/lib/postgresql
+    profiles: ["DEV"]
+
   testdb:
     image: postgres:18.1
     restart: always
@@ -29,9 +31,25 @@ services:
     volumes:
       - ./src:/usr/src/app/src
       - ./test:/usr/src/app/test
-      - ./migrations:/usr/src/app/migrations
     ports:
       - "3000:3000"
+    profiles: ["DEV"]
+
+  # New: e2e test runner (ephemeral)
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    env_file:
+      - .env.test
+    depends_on:
+      - testdb
+    command: >
+      sh -c "
+        npm run test:e2e:ci
+      "
+    profiles: ["TEST"]
 
 volumes:
   data:

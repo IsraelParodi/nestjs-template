@@ -1,16 +1,20 @@
-import { deleteRequest, getRequest, patchRequest, postRequest } from "./tests.helper";
-import * as request from 'supertest';
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+} from '../tests.helper';
 
 const BASE_URL = '/lov';
 
 const baseLovDto = {
-  "key": "prueba",
-  "description": "LOV de Prueba"
+  key: 'prueba',
+  description: 'LOV de Prueba',
 };
 
 const baseLovDetailDto = {
-  "name": "RUC",
-  "detail": "Registro Único de Contribuyente"
+  name: 'RUC',
+  detail: 'Registro Único de Contribuyente',
 };
 
 function expectLovShape(payload: any) {
@@ -25,7 +29,7 @@ function expectLovDetailShape(payload: any) {
   expect(payload).toMatchObject({
     key: expect.objectContaining({
       id: expect.any(Number),
-      key: expect.any(String)
+      key: expect.any(String),
     }),
     name: expect.any(String),
     detail: expect.any(String),
@@ -33,11 +37,13 @@ function expectLovDetailShape(payload: any) {
 }
 
 describe('[Feature] - LOV - /lov', () => {
+  let lovId: number;
   let lovDetailId: number;
 
   describe('LOV [POST /lov]', () => {
     it('should create a lov', async () => {
       const response = await postRequest(BASE_URL, baseLovDto, 201, true);
+      lovId = response.body.payload.id;
       expectLovShape(response.body.payload);
     });
 
@@ -53,9 +59,14 @@ describe('[Feature] - LOV - /lov', () => {
 
   describe('LOV detail [POST /lov/:key/details]', () => {
     it('should create a lov detail', async () => {
-      const key = 'prueba'
-      const response = await postRequest(`${BASE_URL}/${key}/details`, baseLovDetailDto, 201, true);
-      lovDetailId = response.body.payload.id
+      const key = 'prueba';
+      const response = await postRequest(
+        `${BASE_URL}/${key}/details`,
+        baseLovDetailDto,
+        201,
+        true,
+      );
+      lovDetailId = response.body.payload.id;
       expectLovDetailShape(response.body.payload);
     });
   });
@@ -91,9 +102,14 @@ describe('[Feature] - LOV - /lov', () => {
     it('should update a lov', async () => {
       const updateLovDto = {
         ...baseLovDto,
-        description: "pruebaaa"
-      }
-      const response = await patchRequest('/lov/11', updateLovDto, 200, globalThis.accessToken);
+        description: 'pruebaaa',
+      };
+      const response = await patchRequest(
+        '/lov/11',
+        updateLovDto,
+        200,
+        globalThis.accessToken,
+      );
       expect(response.body.payload).toEqual(
         expect.objectContaining({
           ...updateLovDto,
@@ -101,7 +117,7 @@ describe('[Feature] - LOV - /lov', () => {
           createdBy: expect.any(Object),
           updatedAt: expect.any(String),
           updatedBy: expect.any(Object),
-        })
+        }),
       );
     });
   });
@@ -110,16 +126,25 @@ describe('[Feature] - LOV - /lov', () => {
     it('should update a lov detail', async () => {
       const updateLovDto = {
         ...baseLovDetailDto,
-        detail: "pruebaaa"
-      }
-      const response = await patchRequest(`${BASE_URL}/details/${lovDetailId}`, updateLovDto, 200, true);
+        detail: 'pruebaaa',
+      };
+      const response = await patchRequest(
+        `${BASE_URL}/details/${lovDetailId}`,
+        updateLovDto,
+        200,
+        true,
+      );
       expectLovDetailShape(response.body.payload);
     });
   });
 
-  describe('Delete lov by id [DELETE /lov/:id]', () => {
-    it('should delete a lov by id', async () => {
-      const response = await deleteRequest(`${BASE_URL}/1`, 200, true);
+  describe('Delete lov detail by id [DELETE /lov/details/:id]', () => {
+    it('should delete a lov detail by id', async () => {
+      const response = await deleteRequest(
+        `${BASE_URL}/details/${lovDetailId}`,
+        200,
+        true,
+      );
       expect(response.body.payload).toEqual({
         raw: expect.any(Array),
         affected: 1,
@@ -127,9 +152,10 @@ describe('[Feature] - LOV - /lov', () => {
     });
   });
 
-  describe('Delete lov detail by id [DELETE /lov/details/:id]', () => {
-    it('should delete a lov detail by id', async () => {
-      const response = await deleteRequest(`${BASE_URL}/details/${lovDetailId}`, 200, true);
+  describe('Delete lov by id [DELETE /lov/:id]', () => {
+    it('should delete a lov by id', async () => {
+      const response = await deleteRequest(`${BASE_URL}/${lovId}`, 200, true);
+      console.log('🚀 ~ lovId:', lovId);
       expect(response.body.payload).toEqual({
         raw: expect.any(Array),
         affected: 1,

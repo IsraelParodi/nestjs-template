@@ -26,20 +26,21 @@ export class UsersDomainService {
     private readonly hashingService: HashingService,
     private readonly countriesDomainService: CountriesDomainService,
     private readonly notificationService: NotificationsDomainService,
-  ) { }
+  ) {}
 
   async create(createUserDto: Partial<CreateUserDto>) {
     try {
       const [roleFound, creator, country] = await Promise.all([
-        createUserDto.role && this.roleService.findOne(createUserDto.role),
+        createUserDto.role &&
+          this.roleService.findOne({ where: { id: createUserDto.role } }),
         createUserDto.createdBy &&
-        this.userRepository.findOne({
-          where: { id: createUserDto.createdBy },
-        }),
+          this.userRepository.findOne({
+            where: { id: createUserDto.createdBy },
+          }),
         createUserDto.country &&
-        this.countriesDomainService.findOne({
-          where: { id: createUserDto.country },
-        }),
+          this.countriesDomainService.findOne({
+            where: { id: createUserDto.country },
+          }),
       ]);
 
       this.logger.debug(`Role found: ${JSON.stringify(roleFound)}`);
@@ -48,7 +49,10 @@ export class UsersDomainService {
       const user = new User();
       Object.assign(user, createUserDto);
       user.password = await this.hashingService.hash(createUserDto.password);
-      user.role = roleFound ?? process.env.APP_ENV === 'TEST' ? new Role(1) : new Role(2)
+      user.role =
+        (roleFound ?? process.env.APP_ENV === 'TEST')
+          ? new Role(1)
+          : new Role(2);
       user.country = country;
 
       if (createUserDto.createdBy) {
@@ -66,14 +70,16 @@ export class UsersDomainService {
           updatedAt: true,
           createdAt: true,
           deletedAt: true,
+          phone: true,
         },
       });
     } catch (error) {
+      let errorException;
       const pgUniqueViolationErrorCode = '23505';
       if (error.code === pgUniqueViolationErrorCode) {
-        throw new ConflictException();
+        errorException = new ConflictException();
       }
-      throw error;
+      throw errorException;
     }
   }
 
@@ -97,6 +103,7 @@ export class UsersDomainService {
         legalName: true,
         name: true,
         phone: true,
+        createdAt: true,
       },
     });
   }
@@ -106,17 +113,27 @@ export class UsersDomainService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    let country;
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['createdBy', 'updatedBy', 'deletedBy'],
     });
 
+    country = user.country;
+
+    if (updateUserDto.country) {
+      country = await this.countriesDomainService.findOne({
+        where: { id: updateUserDto.country },
+      });
+    }
+
     const [roleFound, updater] = await Promise.all([
-      updateUserDto.role && this.roleService.findOne(updateUserDto.role),
+      updateUserDto.role &&
+        this.roleService.findOne({ where: { id: updateUserDto.role } }),
       updateUserDto.updatedBy &&
-      this.userRepository.findOne({
-        where: { id: updateUserDto.updatedBy },
-      }),
+        this.userRepository.findOne({
+          where: { id: updateUserDto.updatedBy },
+        }),
     ]);
 
     this.logger.debug(`Role found: ${JSON.stringify(roleFound)}`);
@@ -124,6 +141,7 @@ export class UsersDomainService {
     Object.assign(user, updateUserDto);
     user.updatedBy = updater;
     user.role = roleFound;
+    user.country = country;
 
     if (updateUserDto.password) {
       user.password = await this.hashingService.hash(updateUserDto.password);
@@ -143,8 +161,19 @@ export class UsersDomainService {
 
       await this.notificationService.send(paramsNotificationEmailSend);
     }
+    await this.userRepository.update({ ...user });
 
-    return this.userRepository.save(user);
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['createdBy', 'updatedBy'],
+      select: {
+        id: true,
+        email: true,
+        updatedAt: true,
+        createdAt: true,
+        deletedAt: true,
+      },
+    });
   }
 
   remove(id: number) {

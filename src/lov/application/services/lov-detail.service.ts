@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
-import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
-import { IFindOne } from '@common/interfaces/commons.interface';
-
 import { ListOfValuesDetailDomainService } from '@lov/domain/services/lov-detail.service';
-import { ListOfValuesDetail } from '@lov/domain/lov-detail';
 import { UpdateListOfValuesDetailDto } from '@lov/presenters/dto/update-lov-detail.dto';
 import { CreateListOfValuesDetailDto } from '@lov/presenters/dto/create-lov-detail.dto';
 

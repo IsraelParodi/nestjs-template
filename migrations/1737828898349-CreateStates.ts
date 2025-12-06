@@ -21,8 +21,6 @@ CREATE TABLE states (
 );
 
 
-ALTER TABLE states OWNER TO db_owner;
-
 --
 -- Name: COLUMN states."wikiDataId"; Type: COMMENT; Schema: public; Owner: postgres
 --

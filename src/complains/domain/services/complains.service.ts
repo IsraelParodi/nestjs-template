@@ -25,7 +25,7 @@ export class ComplainsDomainService {
     private readonly countriesDomainService: CountriesDomainService,
     private readonly statesDomainService: StatesDomainService,
     private readonly notificationService: NotificationsDomainService,
-  ) { }
+  ) {}
 
   async create(createComplainsDto: CreateComplainsDto) {
     const {
@@ -43,38 +43,35 @@ export class ComplainsDomainService {
     const [creator, country, state, documentType, serviceType, currency, type] =
       await Promise.all([
         userCreator &&
-        this.usersDomainService.findOne({ where: whereUserCreator }),
+          this.usersDomainService.findOne({ where: whereUserCreator }),
         complainerCountry &&
-        this.countriesDomainService.findOne({
-          where: { id: complainerCountry },
-        }),
+          this.countriesDomainService.findOne({
+            where: { id: complainerCountry },
+          }),
         complainerState &&
-        this.statesDomainService.findOne({ where: { id: complainerState } }),
+          this.statesDomainService.findOne({ where: { id: complainerState } }),
         documentTypeId &&
-        this.listOfValuesDomainService.findChildByKey(
-          'document_type',
-          documentTypeId,
-        ),
+          this.listOfValuesDomainService.findChildByKey(
+            'document_type',
+            documentTypeId,
+          ),
         serviceTypeId &&
-        this.listOfValuesDomainService.findChildByKey(
-          'service_type',
-          serviceTypeId,
-        ),
+          this.listOfValuesDomainService.findChildByKey(
+            'service_type',
+            serviceTypeId,
+          ),
         currencyId &&
-        this.listOfValuesDomainService.findChildByKey('currency', currencyId),
+          this.listOfValuesDomainService.findChildByKey('currency', currencyId),
         typeId &&
-        this.listOfValuesDomainService.findChildByKey(
-          'complaint_type',
-          typeId,
-        ),
+          this.listOfValuesDomainService.findChildByKey(
+            'complaint_type',
+            typeId,
+          ),
       ]);
 
     this.logger.debug(`Creator found: ${JSON.stringify(creator)}`);
 
-    this.validateDocumentNumber(
-      documentType.name,
-      documentNumber,
-    );
+    this.validateDocumentNumber(documentType.name, documentNumber);
 
     const complains = new Complains();
 
@@ -166,7 +163,10 @@ export class ComplainsDomainService {
     return this.complainsRepository.delete(id);
   }
 
-  private validateDocumentNumber(documentType: string, documentNumber: string): void {
+  private validateDocumentNumber(
+    documentType: string,
+    documentNumber: string,
+  ): void {
     const patterns: Record<string, RegExp> = {
       DNI: /^\d{8}$/,
       RUC: /^(10|20)\d{9}$/,

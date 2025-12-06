@@ -5,7 +5,6 @@ import { TokenRepository } from '@iam/domain/repositories/token.repository';
 import { Token } from '@iam/domain/token';
 import { TokenMapper } from '../mappers/token.mapper';
 import { TokenEntity } from '../entities/token.entity';
-import { IFind, PaginatedResult } from '@common/interfaces/commons.interface';
 import { PageableService } from '@common/services/pageable.service';
 
 @Injectable()
@@ -27,24 +26,6 @@ export class OrmTokenRepository implements TokenRepository {
     return this.tokenRepository.create(token);
   }
 
-  async find({
-    where,
-    relations,
-    start,
-    limit,
-  }: IFind): Promise<PaginatedResult<Token>> {
-    const [tokens, total] = await this.tokenRepository.findAndCount({
-      where,
-      relations,
-      skip: start,
-      take: limit,
-    });
-
-    const data = tokens.map((role) => TokenMapper.toDomain(role));
-
-    return this.pageableService.getPages({ data, total, start, limit });
-  }
-
   async findOne({
     where,
     relations,
@@ -53,7 +34,7 @@ export class OrmTokenRepository implements TokenRepository {
     relations: string[];
   }): Promise<Token> {
     const entity = await this.tokenRepository.findOne({ where, relations });
-    return TokenMapper.toDomain(entity);
+    return entity;
   }
 
   async delete(userId: number): Promise<DeleteResult> {

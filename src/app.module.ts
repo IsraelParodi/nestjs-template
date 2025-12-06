@@ -16,20 +16,50 @@ import { ContactUsModule } from '@contact-us/contact-us.module';
 
 const envMap: Record<string, string> = {
   TEST: '.env.test',
-  production: '.env.production',
+  PROD: '.env.production',
+  DEV: '.env.development',
 };
 
-const envFilePath = envMap[process.env.APP_ENV ?? ''] ?? '.env.development';
+const envFilePath = envMap[process.env.APP_ENV];
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [appConfig],
       validationSchema: Joi.object({
-        DATABASE_HOST: Joi.required(),
-        DATABASE_PORT: Joi.number().default(5432),
+        APP_ENV: Joi.string().valid('TEST', 'DEV', 'PROD').required(),
+
+        JWT_SECRET: Joi.string().min(10).required(),
+        JWT_TOKEN_AUDIENCE: Joi.string().required(),
+        JWT_TOKEN_ISSUER: Joi.string().required(),
+        JWT_ACCESS_TOKEN_TTL: Joi.number().integer().positive().required(),
+        JWT_REFRESH_TOKEN_TTL: Joi.number().integer().positive().required(),
+
+        DB_TYPE: Joi.string().valid('postgres').required(),
+        DATABASE_HOST: Joi.string().hostname().required(),
+        DATABASE_PORT: Joi.number().port().default(5432),
+        DATABASE_USER: Joi.string().required(),
+        DATABASE_PASSWORD: Joi.string().required(),
+        DATABASE_NAME: Joi.string().required(),
+
+        POSTGRES_USER: Joi.string().optional(),
+        POSTGRES_PASSWORD: Joi.string().optional(),
+        POSTGRES_DB: Joi.string().optional(),
+
+        SENDGRID_API_KEY: Joi.string().required(),
+        SENDGRID_API_SENDER: Joi.string().email().required(),
+
+        TWILIO_API_ACCOUNT_SID: Joi.string().required(),
+        TWILIO_API_TOKEN: Joi.string().required(),
+        TWILIO_API_SENDER: Joi.string().required(),
+
+        LOCAL_BO_FRONTEND_URL: Joi.string().uri().required(),
+        DEV_BO_FRONTEND_URL: Joi.string().uri().required(),
+        PROD_BO_FRONTEND_URL: Joi.string().uri().required(),
+
+        API_KEY: Joi.string().optional(),
       }),
-      envFilePath: envFilePath
+      envFilePath: envFilePath,
     }),
     ThrottlerModule.forRoot([
       {
@@ -49,8 +79,8 @@ const envFilePath = envMap[process.env.APP_ENV ?? ''] ?? '.env.development';
           database: process.env.DATABASE_NAME,
           autoLoadEntities: true,
           synchronize: false,
-          logging: ['STAGING', "DEV"].includes(process.env.APP_ENV),
-          ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV || '')
+          logging: ['STAGING', 'DEV'].includes(process.env.APP_ENV),
+          ssl: ['PROD', 'STAGING'].includes(process.env.APP_ENV)
             ? { ca: process.env.CA_CERT }
             : false,
         };
@@ -68,4 +98,4 @@ const envFilePath = envMap[process.env.APP_ENV ?? ''] ?? '.env.development';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

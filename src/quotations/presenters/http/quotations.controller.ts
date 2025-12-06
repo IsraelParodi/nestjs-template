@@ -39,13 +39,15 @@ export class QuotationsController {
     return this.quotationsApplicationService.create(createQuotationsDto);
   }
 
-  @Post("create-without-transaction")
+  @Post('create-without-transaction')
   createWithoutTransaction(
     @Body() createQuotationsDto: CreateQuotationsDto,
     @Req() request: Request,
   ) {
     createQuotationsDto.createdBy = request.user?.sub;
-    return this.quotationsApplicationService.createWithoutTransaction(createQuotationsDto);
+    return this.quotationsApplicationService.createWithoutTransaction(
+      createQuotationsDto,
+    );
   }
 
   @Get()

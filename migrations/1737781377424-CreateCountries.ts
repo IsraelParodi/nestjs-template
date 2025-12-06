@@ -35,8 +35,6 @@ CREATE TABLE countries (
 );
 
 
-ALTER TABLE countries OWNER TO db_owner;
-
 --
 -- Name: COLUMN countries."wikiDataId"; Type: COMMENT; Schema: public; Owner: postgres
 --

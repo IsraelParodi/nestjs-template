@@ -17,7 +17,7 @@ export class RefreshTokenIdsStorage {
 
   async validate(userId: number, tokenId: string): Promise<boolean> {
     const storedToken = await this.refreshTokenRepository.findOne({
-      where: { userId, tokenId },
+      where: { userId },
     });
 
     if (!storedToken) {

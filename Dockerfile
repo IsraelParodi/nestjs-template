@@ -52,9 +52,9 @@ FROM base AS prod
 WORKDIR /usr/src/app
 
 # Copy only compiled output and configs securely
-COPY --from=builder --chown=root:root --chmod=555 dist ./dist
-COPY --from=builder --chown=root:root --chmod=444 package*.json ./
-COPY --from=builder --chown=root:root --chmod=444 nest-cli.json tsconfig*.json ./
+COPY --from=builder --chown=root:root --chmod=555 /usr/src/app/dist ./dist
+COPY --from=builder --chown=root:root --chmod=444 /usr/src/app/package*.json ./
+COPY --from=builder --chown=root:root --chmod=444 /usr/src/app/nest-cli.json /usr/src/app/tsconfig*.json ./
 
 RUN npm ci --ignore-scripts --prefer-offline --only=production && \
     chmod -R a-w /usr/src/app

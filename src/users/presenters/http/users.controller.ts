@@ -9,6 +9,8 @@ import {
   Query,
   ParseIntPipe,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Auth } from '@iam/infrastructure/decorators/auth.decorator';
 import { Roles } from '@iam/infrastructure/decorators/roles.decorator';
@@ -37,8 +39,10 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() query: PaginationQueryUsersDto) {
-    return this.usersApplicationService.findAll(query);
+  findAll(
+    @Query() { start = 0, limit = 10, ...filters }: PaginationQueryUsersDto,
+  ) {
+    return this.usersApplicationService.findAll({ start, limit, ...filters });
   }
 
   @Get(':id')
@@ -54,6 +58,7 @@ export class UsersController {
         legalName: true,
         name: true,
         phone: true,
+        createdAt: true,
       },
     });
   }
@@ -74,6 +79,7 @@ export class UsersController {
   }
 
   @Post('massive-delete')
+  @HttpCode(HttpStatus.OK)
   removeMany(@Body() deleteUserDto: DeleteManyDto, @Req() request: Request) {
     const deletedBy = request.user.sub;
     return this.usersApplicationService.removeMany(deleteUserDto, deletedBy);

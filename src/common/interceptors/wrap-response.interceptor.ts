@@ -10,7 +10,7 @@ import { Observable, map } from 'rxjs';
 export class WrapResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    const path = request?.url || '';
+    const path = request?.url;
 
     return next.handle().pipe(
       map((data) => ({

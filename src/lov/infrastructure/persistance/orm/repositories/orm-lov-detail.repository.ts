@@ -1,11 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import {
-  IFind,
-  IFindOne,
-  PaginatedResult,
-} from '@common/interfaces/commons.interface';
+import { IFindOne } from '@common/interfaces/commons.interface';
 
 import { ListOfValuesDetail } from '@lov/domain/lov-detail';
 import { ListOfValuesDetailRepository } from '@lov/domain/repositories/lov-detail.repository';

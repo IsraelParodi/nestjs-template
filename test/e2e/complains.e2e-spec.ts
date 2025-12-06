@@ -1,4 +1,9 @@
-import { deleteRequest, getRequest, patchRequest, postRequest } from "./tests.helper";
+import {
+  deleteRequest,
+  getRequest,
+  patchRequest,
+  postRequest,
+} from '../tests.helper';
 
 const BASE_URL = '/complains';
 
@@ -52,15 +57,26 @@ describe('[Feature] - Complains - /complains', () => {
     it('should create a complain', async () => {
       const response = await postRequest(BASE_URL, baseComplainDto);
       expectComplainShape(response.body.payload);
-      expect(response.body.payload.complainerCountry).toMatchObject({ id: baseComplainDto.complainerCountry, name: expect.any(String) });
-      expect(response.body.payload.complainerState).toMatchObject({ id: baseComplainDto.complainerState, name: expect.any(String) });
+      expect(response.body.payload.complainerCountry).toMatchObject({
+        id: baseComplainDto.complainerCountry,
+        name: expect.any(String),
+      });
+      expect(response.body.payload.complainerState).toMatchObject({
+        id: baseComplainDto.complainerState,
+        name: expect.any(String),
+      });
     });
 
     it('should validate the national tax payer registry', async () => {
-      const invalidDto = { ...baseComplainDto, nationalTaxpayerRegistry: '523324' };
+      const invalidDto = {
+        ...baseComplainDto,
+        nationalTaxpayerRegistry: '523324',
+      };
       const response = await postRequest(BASE_URL, invalidDto, 400);
       expect(response.body.error).toEqual({
-        message: ['The National Taxpayer Registry must start with 10 or 20 and have 11 as length'],
+        message: [
+          'The National Taxpayer Registry must start with 10 or 20 and have 11 as length',
+        ],
         error: 'Bad Request',
         statusCode: 400,
       });
@@ -79,7 +95,12 @@ describe('[Feature] - Complains - /complains', () => {
 
   describe('Complains [PATCH /complains/:id]', () => {
     it('should update a complain', async () => {
-      const response = await patchRequest(`${BASE_URL}/1`, { currency: 8 }, 200, true);
+      const response = await patchRequest(
+        `${BASE_URL}/1`,
+        { currency: 8 },
+        200,
+        true,
+      );
       expect(response.body.payload).toMatchObject({
         id: expect.any(Number),
         code: expect.stringMatching(/^B-\d{8}$/),
@@ -103,8 +124,14 @@ describe('[Feature] - Complains - /complains', () => {
     it('should return a complain by id', async () => {
       const response = await getRequest(`${BASE_URL}/1`, 200, true);
       expectComplainShape(response.body.payload);
-      expect(response.body.payload.complainerState).toMatchObject({ id: expect.any(Number), name: expect.any(String) });
-      expect(response.body.payload.complainerCountry).toMatchObject({ name: expect.any(String), iso2: expect.any(String) });
+      expect(response.body.payload.complainerState).toMatchObject({
+        id: expect.any(Number),
+        name: expect.any(String),
+      });
+      expect(response.body.payload.complainerCountry).toMatchObject({
+        name: expect.any(String),
+        iso2: expect.any(String),
+      });
     });
 
     it('should return error when complain not found', async () => {

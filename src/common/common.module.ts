@@ -4,7 +4,7 @@ import { LoggingMiddleware } from './middleware/logging.middleware';
 import { PageableService } from './services/pageable.service';
 import { DiscoveryModule, MetadataScanner } from '@nestjs/core';
 import { AuthInspectorService } from './services/auth-inspector.service';
-import { AuthInspectorController } from './controllers/auth-inspector.controller';
+import { CommonController } from './controllers/common.controller';
 import { UnitOfWork } from './services/unit-of-work.service';
 
 @Global()
@@ -16,7 +16,7 @@ import { UnitOfWork } from './services/unit-of-work.service';
     MetadataScanner,
     UnitOfWork,
   ],
-  controllers: [AuthInspectorController],
+  controllers: [CommonController],
   exports: [PageableService, UnitOfWork],
 })
 export class CommonModule implements NestModule {

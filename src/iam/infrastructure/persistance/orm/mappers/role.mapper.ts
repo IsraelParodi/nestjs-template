@@ -30,15 +30,16 @@ export class RoleMapper {
   static mapPermissionsReferenceToPersistence(
     permissions?: Permission[],
   ): PermissionEntity[] {
-    if (permissions.length === 0) return null;
     const permissionsList: PermissionEntity[] = [];
 
-    permissions.forEach((permission) => {
-      const permissionEntity = new PermissionEntity();
-      permissionEntity.id = permission.id;
-      permissionEntity.name = permission.name;
-      permissionsList.push(permissionEntity);
-    });
+    if (permissions?.length > 0) {
+      permissions?.forEach((permission) => {
+        const permissionEntity = new PermissionEntity();
+        permissionEntity.id = permission.id;
+        permissionEntity.name = permission.name;
+        permissionsList.push(permissionEntity);
+      });
+    }
 
     return permissionsList;
   }

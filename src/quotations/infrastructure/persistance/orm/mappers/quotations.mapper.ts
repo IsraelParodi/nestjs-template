@@ -27,18 +27,16 @@ export class QuotationsMapper {
     quotations.origin = quotationsEntity.origin;
     quotations.destination = quotationsEntity.destination;
 
-    if (quotationsEntity.country) {
-      const countryData = this.mapCountryReferenceToDomain(
-        quotationsEntity.country,
-      );
-      quotations.country = {
-        id: countryData?.id,
-        name: countryData?.name,
-        currency: countryData?.currency,
-        phoneCode: countryData?.phoneCode,
-        emoji: countryData?.emoji,
-      };
-    }
+    const countryData = this.mapCountryReferenceToDomain(
+      quotationsEntity.country,
+    );
+    quotations.country = {
+      id: countryData?.id,
+      name: countryData?.name,
+      currency: countryData?.currency,
+      phoneCode: countryData?.phoneCode,
+      emoji: countryData?.emoji,
+    };
 
     quotations.industryType = quotationsEntity.industryType;
     quotations.createdBy = this.mapUserReferenceToDomain(
@@ -73,11 +71,7 @@ export class QuotationsMapper {
     entity.origin = quotations.origin;
     entity.destination = quotations.destination;
 
-    if (quotations.country) {
-      entity.country = this.mapCountryReferenceToPersistence(
-        quotations.country,
-      );
-    }
+    entity.country = this.mapCountryReferenceToPersistence(quotations.country);
 
     entity.industryType = quotations.industryType;
     entity.createdBy = this.mapUserReferenceToPersistence(quotations.createdBy);

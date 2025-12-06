@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ContactUsRepository } from '../repositories/contact-us.repository';
 import { ContactUs } from '../contact-us';
 import { IFindOne } from '@common/interfaces/commons.interface';
@@ -20,10 +20,11 @@ export class ContactUsDomainService {
     private readonly usersDomainService: UsersDomainService,
     private readonly countriesDomainService: CountriesDomainService,
     private readonly notificationsApplicationService: NotificationsApplicationService,
-  ) { }
+  ) {}
 
   async create(contactUs: ContactUs) {
-    const { executor, countryFound } = await this.contactUsValidations(contactUs);
+    const { executor, countryFound } =
+      await this.contactUsValidations(contactUs);
     this.logger.debug(`Creator found: ${JSON.stringify(executor)}`);
 
     contactUs.country = countryFound;
@@ -85,15 +86,15 @@ export class ContactUsDomainService {
   async contactUsValidations(dto: ContactUs) {
     const { createdBy, country } = dto;
 
-    const whereCondition = createdBy && createdBy.id;
+    const whereCondition = createdBy?.id;
     const whereUserExecutor = { id: whereCondition };
     const [executor, countryFound] = await Promise.all([
       whereCondition &&
-      this.usersDomainService.findOne({ where: whereUserExecutor }),
+        this.usersDomainService.findOne({ where: whereUserExecutor }),
       country &&
-      this.countriesDomainService.findOne({
-        where: { id: country.id },
-      }),
+        this.countriesDomainService.findOne({
+          where: { id: country.id },
+        }),
     ]);
 
     return {

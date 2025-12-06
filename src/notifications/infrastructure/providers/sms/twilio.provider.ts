@@ -1,4 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
 import * as twilio from 'twilio';
@@ -40,7 +45,8 @@ export class TwilioProvider implements SmsProvider {
       return smsSent;
     } catch (error) {
       this.logger.error(`Cannot send sms to ${recipient}`);
-      throw error;
+      this.logger.error(`Error: ${JSON.stringify(error)}`);
+      throw new InternalServerErrorException(`Cannot send sms to ${recipient}`);
     }
   }
 }

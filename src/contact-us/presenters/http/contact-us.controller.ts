@@ -26,7 +26,7 @@ import { PaginationQueryContactUsDto } from '../dto/pagination-query-contact-us.
 export class ContactUsController {
   constructor(
     private readonly contactUsApplicationService: ContactUsApplicationService,
-  ) { }
+  ) {}
 
   @Post()
   create(

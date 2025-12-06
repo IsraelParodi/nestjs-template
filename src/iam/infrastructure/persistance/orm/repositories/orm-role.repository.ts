@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { RoleRepository } from '@iam/domain/repositories/role.repository';
@@ -27,16 +27,10 @@ export class OrmRoleRepository implements RoleRepository {
     return RoleMapper.toDomain(newEntity);
   }
 
-  async create(role: Role): Promise<Role> {
-    return this.roleRepository.create(role);
-  }
-
   async findOne({ where, relations }: IFindOne<Role>): Promise<Role> {
     const entity = await this.roleRepository.findOne({ where, relations });
 
-    if (!entity) {
-      throw new NotFoundException(`${Role.name} with ID ${where.id} not found`);
-    }
+    if (!entity) return null;
 
     return RoleMapper.toDomain(entity);
   }

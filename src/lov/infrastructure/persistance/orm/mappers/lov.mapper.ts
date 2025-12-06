@@ -71,12 +71,12 @@ export class ListOfValuesMapper {
   }
 
   static fromDtotoDomain(dto: CreateListOfValuesDto): ListOfValues {
-      const lov = new ListOfValues();
-  
-      lov.key = dto.key;
-      lov.description = dto.description;
-      lov.createdBy = new User(dto.createdBy);
-  
-      return lov;
-    }
+    const lov = new ListOfValues();
+
+    lov.key = dto.key;
+    lov.description = dto.description;
+    lov.createdBy = new User(dto.createdBy);
+
+    return lov;
+  }
 }

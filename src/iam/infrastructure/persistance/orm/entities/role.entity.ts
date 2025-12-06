@@ -19,9 +19,7 @@ export class RoleEntity extends AuditEntity {
   @Column()
   description: string;
 
-  @ManyToMany(() => PermissionEntity, (permission) => permission.roles, {
-    lazy: true,
-  })
+  @ManyToMany(() => PermissionEntity, (permission) => permission.roles)
   @JoinTable({
     name: 'roles_permissions',
     joinColumn: {

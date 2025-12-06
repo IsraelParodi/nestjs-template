@@ -39,6 +39,11 @@ export class UsersApplicationService {
           body: { email: user.email },
         },
       }),
+      this.notificationsApplicationService.send({
+        channel: NotificationChannelEnum.SMS,
+        recipient: user.phone,
+        message: 'Bienvenido, ahora es usuario!',
+      }),
     ]);
 
     return user;

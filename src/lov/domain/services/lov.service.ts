@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
 import { IFindOne } from '@common/interfaces/commons.interface';
@@ -18,7 +23,7 @@ export class ListOfValuesDomainService {
   constructor(
     private readonly listOfValuesRepository: ListOfValuesRepository,
     private readonly usersDomainService: UsersDomainService,
-  ) { }
+  ) {}
 
   async create(listOfValue: ListOfValues) {
     const { createdBy } = listOfValue;
@@ -27,7 +32,7 @@ export class ListOfValuesDomainService {
       where: { id: createdBy.id },
     });
 
-    const lov = await this.findOne({ where: { key: listOfValue.key } })
+    const lov = await this.findOne({ where: { key: listOfValue.key } });
 
     if (lov) throw new BadRequestException('The LOV already exists');
 
@@ -49,19 +54,31 @@ export class ListOfValuesDomainService {
     return this.listOfValuesRepository.find({ start, limit });
   }
 
-  async findOne({ where, relations, select, validate = false }: IFindOne<ListOfValues>) {
-    const lov = await this.listOfValuesRepository.findOne({ where, relations, select });
+  async findOne({
+    where,
+    relations,
+    select,
+    validate = false,
+  }: IFindOne<ListOfValues>) {
+    const lov = await this.listOfValuesRepository.findOne({
+      where,
+      relations,
+      select,
+    });
 
-    if (validate && !lov) throw new NotFoundException(`LOV with ${structuredObject(where)} not found`);
+    if (validate && !lov)
+      throw new NotFoundException(
+        `LOV with ${structuredObject(where)} not found`,
+      );
 
-    return lov
+    return lov;
   }
 
   async update(id: number, updateListOfValuesDto: UpdateListOfValuesDto) {
     const listOfValues = await this.findOne({
       where: { id },
       relations: ['createdBy', 'updatedBy'],
-      validate: true
+      validate: true,
     });
 
     const { updatedBy: userUpdater } = updateListOfValuesDto;

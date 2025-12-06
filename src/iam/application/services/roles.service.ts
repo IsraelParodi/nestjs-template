@@ -3,6 +3,8 @@ import { CreateRoleDto } from '@iam/presenters/dto/roles/create-role.dto';
 import { UpdateRoleDto } from '@iam/presenters/dto/roles/update-role.dto';
 import { RolesDomainService } from '@iam/domain/services/roles.service';
 import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
+import { IFindOne } from '@common/interfaces/commons.interface';
+import { Role } from '@users/domain/role';
 
 @Injectable()
 export class RolesApplicationService {
@@ -16,8 +18,8 @@ export class RolesApplicationService {
     return this.rolesDomainService.findAll(paginationQueryDto);
   }
 
-  findOne(id: number) {
-    return this.rolesDomainService.findOne(id);
+  findOne({ where, relations, select }: IFindOne<Role>) {
+    return this.rolesDomainService.findOne({ where, relations, select });
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import {
@@ -20,7 +20,7 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     @InjectRepository(ListOfValuesEntity)
     private readonly listOfValues: Repository<ListOfValuesEntity>,
     private readonly pageableService: PageableService,
-  ) { }
+  ) {}
 
   async save(listOfValues: ListOfValues): Promise<ListOfValues> {
     const persistenceModel = ListOfValuesMapper.toPersistence(listOfValues);
@@ -43,7 +43,7 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
   async findOne({
     where,
     relations,
-    select
+    select,
   }: IFindOne<ListOfValues>): Promise<ListOfValues> {
     const wherePartial: Partial<ListOfValues> = where;
 
@@ -54,7 +54,7 @@ export class OrmListOfValuesRepository implements ListOfValuesRepository {
     });
 
     return entity ? ListOfValuesMapper.toDomain(entity) : null;
-  };
+  }
 
   async find({
     where,

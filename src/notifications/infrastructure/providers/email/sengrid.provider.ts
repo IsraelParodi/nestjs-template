@@ -1,4 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
 import sengridConfig from '@notifications/infrastructure/config/sengrid.config';
 import { ConfigType } from '@nestjs/config';
@@ -36,7 +41,10 @@ export class SendgridProvider implements EmailProvider {
       this.logger.log(`Mail sent successfully to ${recipient}`);
     } catch (error) {
       this.logger.error(`Cannot send email to ${recipient}`);
-      throw error;
+      this.logger.error(`Error: ${JSON.stringify(error)}`);
+      throw new InternalServerErrorException(
+        `Cannot send email to ${recipient}`,
+      );
     }
   }
 }

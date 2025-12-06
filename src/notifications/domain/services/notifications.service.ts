@@ -14,22 +14,30 @@ export class NotificationsDomainService {
   ) {}
 
   async send(params: SendNotificationType) {
-    if (
-      params.channel == NotificationChannelEnum.EMAIL &&
-      ['PROD'].includes(process.env.APP_ENV)
-    ) {
-      await this.emailProvider.send(params);
-    }
+    try {
+      if (
+        params.channel == NotificationChannelEnum.EMAIL &&
+        ['PROD', 'TEST'].includes(process.env.APP_ENV)
+      ) {
+        await this.emailProvider.send(params);
+      }
 
-    if (params.channel == NotificationChannelEnum.SMS) {
-      await this.smsProvider.send(params);
-    }
+      if (
+        params.channel == NotificationChannelEnum.SMS &&
+        ['PROD', 'TEST'].includes(process.env.APP_ENV)
+      ) {
+        await this.smsProvider.send(params);
+      }
 
-    this.logger.log(
-      `NotificationDomainService request by ${params.channel} channel`,
-    );
-    this.logger.log(
-      `NotificationDomainService requested with data: ${JSON.stringify(params)}`,
-    );
+      this.logger.log(
+        `NotificationDomainService request by ${params.channel} channel`,
+      );
+      this.logger.log(
+        `NotificationDomainService requested with data: ${JSON.stringify(params)}`,
+      );
+    } catch (error) {
+      this.logger.debug(`Error: ${JSON.stringify(error)}`);
+      throw error;
+    }
   }
 }

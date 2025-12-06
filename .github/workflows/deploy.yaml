@@ -1,0 +1,187 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: TEST
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435
+
+      ################################
+      # Create .env.test dynamically #
+      ################################
+      - name: Create .env.test
+        env:
+          # JWT
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_TOKEN_AUDIENCE: ${{ secrets.JWT_TOKEN_AUDIENCE }}
+          JWT_TOKEN_ISSUER: ${{ secrets.JWT_TOKEN_ISSUER }}
+          JWT_ACCESS_TOKEN_TTL: ${{ secrets.JWT_ACCESS_TOKEN_TTL }}
+          JWT_REFRESH_TOKEN_TTL: ${{ secrets.JWT_REFRESH_TOKEN_TTL }}
+
+          # DB (for app/TypeORM)
+          DB_TYPE: ${{ secrets.DB_TYPE }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          API_KEY: ${{ secrets.API_KEY }}
+
+          # SENDGRID
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_API_SENDER: ${{ secrets.SENDGRID_API_SENDER }}
+
+          # TWILIO
+          TWILIO_API_ACCOUNT_SID: ${{ secrets.TWILIO_API_ACCOUNT_SID }}
+          TWILIO_API_TOKEN: ${{ secrets.TWILIO_API_TOKEN }}
+          TWILIO_API_SENDER: ${{ secrets.TWILIO_API_SENDER }}
+
+          LOCAL_BO_FRONTEND_URL: ${{ secrets.LOCAL_BO_FRONTEND_URL }}
+          DEV_BO_FRONTEND_URL: ${{ secrets.DEV_BO_FRONTEND_URL }}
+          PROD_BO_FRONTEND_URL: ${{ secrets.PROD_BO_FRONTEND_URL }}
+
+          # DB (for Postgres init)
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+
+          PASSWORD_TEST: ${{ secrets.PASSWORD_TEST }}
+        run: |
+          cat <<EOF > .env.test
+          # JWT
+          JWT_SECRET=$JWT_SECRET
+          JWT_TOKEN_AUDIENCE=$JWT_TOKEN_AUDIENCE
+          JWT_TOKEN_ISSUER=$JWT_TOKEN_ISSUER
+          JWT_ACCESS_TOKEN_TTL=$JWT_ACCESS_TOKEN_TTL
+          JWT_REFRESH_TOKEN_TTL=$JWT_REFRESH_TOKEN_TTL
+
+          # DATABASE (for app/TypeORM)
+          DB_TYPE=$DB_TYPE
+          DATABASE_USER=$DATABASE_USER
+          DATABASE_PASSWORD=$DATABASE_PASSWORD
+          DATABASE_NAME=$DATABASE_NAME
+          DATABASE_PORT=$DATABASE_PORT
+          DATABASE_HOST=$DATABASE_HOST
+          API_KEY=$API_KEY
+
+          # SENDGRID
+          SENDGRID_API_KEY=$SENDGRID_API_KEY
+          SENDGRID_API_SENDER=$SENDGRID_API_SENDER
+
+          # TWILIO
+          TWILIO_API_ACCOUNT_SID=$TWILIO_API_ACCOUNT_SID
+          TWILIO_API_TOKEN=$TWILIO_API_TOKEN
+          TWILIO_API_SENDER=$TWILIO_API_SENDER
+
+          LOCAL_BO_FRONTEND_URL=$LOCAL_BO_FRONTEND_URL
+          DEV_BO_FRONTEND_URL=$DEV_BO_FRONTEND_URL
+          PROD_BO_FRONTEND_URL=$PROD_BO_FRONTEND_URL
+
+          # DATABASE (for Postgres image init)
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_DB=$POSTGRES_DB
+
+          PASSWORD_TEST=$PASSWORD_TEST
+          EOF
+
+      ################################
+      # Create .env.development dynamically #
+      ################################
+      - name: Create .env.development
+        env:
+          # JWT
+          DEV_JWT_SECRET: ${{ secrets.DEV_JWT_SECRET }}
+          DEV_JWT_TOKEN_AUDIENCE: ${{ secrets.DEV_JWT_TOKEN_AUDIENCE }}
+          DEV_JWT_TOKEN_ISSUER: ${{ secrets.DEV_JWT_TOKEN_ISSUER }}
+          DEV_JWT_ACCESS_TOKEN_TTL: ${{ secrets.DEV_JWT_ACCESS_TOKEN_TTL }}
+          DEV_JWT_REFRESH_TOKEN_TTL: ${{ secrets.DEV_JWT_REFRESH_TOKEN_TTL }}
+
+          # DB (for app/TypeORM)
+          DEV_DB_TYPE: ${{ secrets.DEV_DB_TYPE }}
+          DEV_DATABASE_USER: ${{ secrets.DEV_DATABASE_USER }}
+          DEV_DATABASE_PASSWORD: ${{ secrets.DEV_DATABASE_PASSWORD }}
+          DEV_DATABASE_NAME: ${{ secrets.DEV_DATABASE_NAME }}
+          DEV_DATABASE_PORT: ${{ secrets.DEV_DATABASE_PORT }}
+          DEV_DATABASE_HOST: ${{ secrets.DEV_DATABASE_HOST }}
+          DEV_API_KEY: ${{ secrets.DEV_API_KEY }}
+
+          # SENDGRID
+          DEV_SENDGRID_API_KEY: ${{ secrets.DEV_SENDGRID_API_KEY }}
+          DEV_SENDGRID_API_SENDER: ${{ secrets.DEV_SENDGRID_API_SENDER }}
+
+          # TWILIO
+          DEV_TWILIO_ACCOUNT_SID: ${{ secrets.DEV_TWILIO_API_ACCOUNT_SID }}
+          DEV_TWILIO_TOKEN: ${{ secrets.DEV_TWILIO_API_TOKEN }}
+          DEV_TWILIO_SENDER: ${{ secrets.DEV_TWILIO_API_SENDER }}
+
+          LOCAL_BO_FRONTEND_URL: ${{ secrets.LOCAL_BO_FRONTEND_URL }}
+          DEV_BO_FRONTEND_URL: ${{ secrets.DEV_BO_FRONTEND_URL }}
+          PROD_BO_FRONTEND_URL: ${{ secrets.PROD_BO_FRONTEND_URL }}
+
+          DEV_POSTGRES_USER: ${{ secrets.DEV_POSTGRES_USER }}
+          DEV_POSTGRES_PASSWORD: ${{ secrets.DEV_POSTGRES_PASSWORD }}
+          DEV_POSTGRES_DB: ${{ secrets.DEV_POSTGRES_DB }}
+        run: |
+          cat <<EOF > .env.development
+          # JWT
+          JWT_SECRET=$DEV_JWT_SECRET
+          JWT_TOKEN_AUDIENCE=$DEV_JWT_TOKEN_AUDIENCE
+          JWT_TOKEN_ISSUER=$DEV_JWT_TOKEN_ISSUER
+          JWT_ACCESS_TOKEN_TTL=$DEV_JWT_ACCESS_TOKEN_TTL
+          JWT_REFRESH_TOKEN_TTL=$DEV_JWT_REFRESH_TOKEN_TTL
+
+          # DATABASE (for app/TypeORM)
+          DB_TYPE=$DEV_DB_TYPE
+          DATABASE_USER=$DEV_DATABASE_USER
+          DATABASE_PASSWORD=$DEV_DATABASE_PASSWORD
+          DATABASE_NAME=$DEV_DATABASE_NAME
+          DATABASE_PORT=$DEV_DATABASE_PORT
+          DATABASE_HOST=$DEV_DATABASE_HOST
+          API_KEY=$DEV_API_KEY
+
+          # SENDGRID
+          SENDGRID_API_KEY=$DEV_SENDGRID_API_KEY
+          SENDGRID_API_SENDER=$DEV_SENDGRID_API_SENDER
+
+          # TWILIO
+          TWILIO_API_ACCOUNT_SID=$DEV_TWILIO_ACCOUNT_SID
+          TWILIO_API_TOKEN=$DEV_TWILIO_TOKEN
+          TWILIO_API_SENDER=$DEV_TWILIO_SENDER
+
+          LOCAL_BO_FRONTEND_URL=$LOCAL_BO_FRONTEND_URL
+          DEV_BO_FRONTEND_URL=$DEV_BO_FRONTEND_URL
+          PROD_BO_FRONTEND_URL=$PROD_BO_FRONTEND_URL
+
+          # DATABASE (for Postgres image init)
+          POSTGRES_USER=$DEV_POSTGRES_USER
+          POSTGRES_PASSWORD=$DEV_POSTGRES_PASSWORD
+          POSTGRES_DB=$DEV_POSTGRES_DB
+          EOF
+
+      - name: Run e2e tests in Docker (ephemeral)
+        run: |
+          docker compose -f docker-compose.dev.yaml \
+            --profile TEST \
+            up --build --exit-code-from test
+
+      - name: Tear down test stack
+        if: always()
+        run: |
+          docker compose -f docker-compose.dev.yaml \
+            --profile TEST down -v

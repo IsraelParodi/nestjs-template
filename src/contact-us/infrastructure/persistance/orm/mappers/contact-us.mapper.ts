@@ -22,18 +22,17 @@ export class ContactUsMapper {
     contactUs.receiveAdditionalInformation =
       contactUsEntity.receiveAdditionalInformation;
 
-    if (contactUsEntity.country) {
-      const countryData = this.mapCountryReferenceToDomain(
-        contactUsEntity.country,
-      );
-      contactUs.country = {
-        id: countryData?.id,
-        name: countryData?.name,
-        currency: countryData?.currency,
-        phoneCode: countryData?.phoneCode,
-        emoji: countryData?.emoji,
-      };
-    }
+    const countryData = this.mapCountryReferenceToDomain(
+      contactUsEntity.country,
+    );
+
+    contactUs.country = {
+      id: countryData?.id,
+      name: countryData?.name,
+      currency: countryData?.currency,
+      phoneCode: countryData?.phoneCode,
+      emoji: countryData?.emoji,
+    };
 
     contactUs.createdBy = this.mapUserReferenceToDomain(
       contactUsEntity.createdBy,
@@ -78,9 +77,7 @@ export class ContactUsMapper {
     entity.receiveAdditionalInformation =
       contactUs.receiveAdditionalInformation;
 
-    if (contactUs.country) {
-      entity.country = this.mapCountryReferenceToPersistence(contactUs.country);
-    }
+    entity.country = this.mapCountryReferenceToPersistence(contactUs.country);
 
     entity.createdBy = this.mapUserReferenceToPersistence(contactUs.createdBy);
     entity.updatedBy = this.mapUserReferenceToPersistence(contactUs.updatedBy);

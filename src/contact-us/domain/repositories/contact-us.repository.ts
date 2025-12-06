@@ -1,5 +1,4 @@
 import { ContactUs } from '../contact-us';
 import { BaseRepository } from '@common/repositories/BaseRepository';
 
-export abstract class ContactUsRepository extends BaseRepository<ContactUs> {
-}
+export abstract class ContactUsRepository extends BaseRepository<ContactUs> {}

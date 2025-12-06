@@ -1,10 +1,8 @@
 import {
   BadRequestException,
-  ConflictException,
   Inject,
   Injectable,
   Logger,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
@@ -33,6 +31,8 @@ import { BO_URL } from '@common/common.constants';
 
 @Injectable()
 export class AuthenticationDomainService {
+  private readonly logger = new Logger(AuthenticationDomainService.name);
+
   constructor(
     private readonly userDomainService: UsersDomainService,
     private readonly notificationService: NotificationsDomainService,
@@ -50,10 +50,7 @@ export class AuthenticationDomainService {
 
       return { message: 'User created successfully', id: response.id };
     } catch (error) {
-      const pgUniqueViolationErrorCode = '23505';
-      if (error.code === pgUniqueViolationErrorCode) {
-        throw new ConflictException();
-      }
+      this.logger.debug(`Error: ${JSON.stringify(error)}`);
       throw error;
     }
   }
@@ -126,17 +123,17 @@ export class AuthenticationDomainService {
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
       });
-
-      const user = await this.userDomainService.findOne({
-        where: { id: sub },
-      });
+      let user;
 
       const isValid = await this.refreshTokenIdsStorage.validate(
-        user.id,
+        sub,
         refreshTokenId,
       );
 
       if (isValid) {
+        user = await this.userDomainService.findOne({
+          where: { id: sub },
+        });
         await this.refreshTokenIdsStorage.invalidate(user.id);
       } else {
         throw new UnauthorizedException('Refresh token is invalid');
@@ -152,8 +149,7 @@ export class AuthenticationDomainService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userDomainService.findOne({ where: { email } });
-    if (!user) throw new NotFoundException('User not found');
+    await this.userDomainService.findOne({ where: { email } });
 
     const tokenFound = await this.resetPasswordRepository.findOne({
       where: { email },
@@ -192,7 +188,6 @@ export class AuthenticationDomainService {
       where: { email: resetToken.email },
       select: { id: true },
     });
-    if (!user) throw new NotFoundException('User not found');
 
     const updateUserDto = new UpdateUserDto();
     updateUserDto.password = newPassword;

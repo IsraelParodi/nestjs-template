@@ -1,7 +1,6 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { IFindOne } from '@common/interfaces/commons.interface';
-import { PaginationQueryDto } from '@common/dto/pagination-query.dto.ts';
 
 import { UsersDomainService } from '@users/domain/services/users.service';
 
