@@ -1,0 +1,472 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2013-12-31
+Description: NestJS Template - Local SAM Development Template
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        APP_ENV: DEV
+        DB_TYPE: postgres
+        DATABASE_HOST: host.docker.internal
+        DATABASE_PORT: '5432'
+        DATABASE_USER: db_owner
+        DATABASE_PASSWORD: 123456
+        DATABASE_NAME: db_dev
+        JWT_SECRET: local-secret-key-min-32-characters-required-12345
+        JWT_TOKEN_AUDIENCE: local-app
+        JWT_TOKEN_ISSUER: local-app
+        JWT_ACCESS_TOKEN_TTL: '3600'
+        JWT_REFRESH_TOKEN_TTL: '604800'
+        SENDGRID_API_KEY: SG.test-key-12345
+        SENDGRID_API_SENDER: test@example.com
+        TWILIO_API_ACCOUNT_SID: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        TWILIO_API_TOKEN: test-token-12345
+        TWILIO_API_SENDER: +1234567890
+        LOCAL_BO_FRONTEND_URL: http://localhost:3000
+        DEV_BO_FRONTEND_URL: https://dev.example.com
+        PROD_BO_FRONTEND_URL: https://prod.example.com
+        API_KEY: test-api-key-12345
+
+Resources:
+  # API Gateway
+  NestjsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      TracingEnabled: true
+
+  # Authentication Handlers
+  SignUpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/sign-up.handler
+      Events:
+        SignUpPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /authentication/sign-up
+            Method: POST
+
+  SignInFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/sign-in.handler
+      Events:
+        SignInPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /authentication/sign-in
+            Method: POST
+
+  RefreshTokenFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/refresh-token.handler
+      Events:
+        RefreshPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /authentication/refresh-tokens
+            Method: POST
+
+  ForgotPasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/forgot-password.handler
+      Events:
+        ForgotPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /authentication/forgot-password
+            Method: POST
+
+  ResetPasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/reset-password.handler
+      Events:
+        ResetPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /authentication/reset-password
+            Method: POST
+
+  # Users Handlers
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/create-user.handler
+      Events:
+        CreatePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users
+            Method: POST
+
+  ListUsersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/list-users.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users
+            Method: GET
+
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/get-user.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users/{id}
+            Method: GET
+
+  UpdateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/update-user.handler
+      Events:
+        UpdatePatch:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users/{id}
+            Method: PATCH
+
+  DeleteUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/delete-user.handler
+      Events:
+        DeleteDelete:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users/{id}
+            Method: DELETE
+
+  DeleteManyUsersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/users/infrastructure/adapters/lambda/delete-many-users.handler
+      Events:
+        DeletePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /users/delete
+            Method: POST
+
+  # Quotations Handlers
+  CreateQuotationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/create-quotation.handler
+      Events:
+        CreatePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations
+            Method: POST
+
+  ListQuotationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/list-quotations.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations
+            Method: GET
+
+  GetQuotationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/get-quotation.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations/{id}
+            Method: GET
+
+  UpdateQuotationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/update-quotation.handler
+      Events:
+        UpdatePatch:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations/{id}
+            Method: PATCH
+
+  DeleteQuotationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/delete-quotation.handler
+      Events:
+        DeleteDelete:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations/{id}
+            Method: DELETE
+
+  DeleteManyQuotationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/quotations/infrastructure/adapters/lambda/delete-many-quotations.handler
+      Events:
+        DeletePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /quotations/delete
+            Method: POST
+
+  # Complains Handlers
+  CreateComplainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/complains/infrastructure/adapters/lambda/create-complain.handler
+      Events:
+        CreatePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /complains
+            Method: POST
+
+  ListComplainsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/complains/infrastructure/adapters/lambda/list-complains.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /complains
+            Method: GET
+
+  GetComplainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/complains/infrastructure/adapters/lambda/get-complain.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /complains/{id}
+            Method: GET
+
+  UpdateComplainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/complains/infrastructure/adapters/lambda/update-complain.handler
+      Events:
+        UpdatePatch:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /complains/{id}
+            Method: PATCH
+
+  DeleteComplainFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/complains/infrastructure/adapters/lambda/delete-complain.handler
+      Events:
+        DeleteDelete:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /complains/{id}
+            Method: DELETE
+
+  # Contact Us Handlers
+  CreateContactUsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/contact-us/infrastructure/adapters/lambda/create-contact-us.handler
+      Events:
+        CreatePost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /contact-us
+            Method: POST
+
+  ListContactUsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/contact-us/infrastructure/adapters/lambda/list-contact-us.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /contact-us
+            Method: GET
+
+  GetContactUsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/contact-us/infrastructure/adapters/lambda/get-contact-us.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /contact-us/{id}
+            Method: GET
+
+  DeleteContactUsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/contact-us/infrastructure/adapters/lambda/delete-contact-us.handler
+      Events:
+        DeleteDelete:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /contact-us/{id}
+            Method: DELETE
+
+  # Localities Handlers
+  ListLocalitiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/localities/infrastructure/adapters/lambda/list-localities.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /localities
+            Method: GET
+
+  GetLocalityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/localities/infrastructure/adapters/lambda/get-locality.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /localities/{id}
+            Method: GET
+
+  # LOV Handlers
+  ListLOVFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/lov/infrastructure/adapters/lambda/list-lov.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /lov
+            Method: GET
+
+  GetLOVFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/lov/infrastructure/adapters/lambda/get-lov.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /lov/{id}
+            Method: GET
+
+  # Roles Handlers
+  ListRolesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/roles/list-roles.handler
+      Events:
+        ListGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /roles
+            Method: GET
+
+  GetRoleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: dist/src/iam/infrastructure/adapters/lambda/roles/get-role.handler
+      Events:
+        GetGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NestjsApi
+            Path: /roles/{id}
+            Method: GET
+
+Outputs:
+  NestjsApiEndpoint:
+    Description: API Gateway endpoint URL for local development
+    Value: !Sub 'http://127.0.0.1:3000/dev'
+  NestjsApiFunctionArn:
+    Description: NestJS API ARN
+    Value: !GetAtt NestjsApi.Arn

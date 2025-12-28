@@ -1,0 +1,11 @@
+{
+  "app": "ts-node -P cdk/tsconfig.json cdk/bin/app.ts",
+  "watch": {
+    "include": ["cdk/**", "src/lambda/**"],
+    "exclude": ["cdk.out", "node_modules"]
+  },
+  "context": {
+    "environment": "dev",
+    "appName": "nestjs-template"
+  }
+}
